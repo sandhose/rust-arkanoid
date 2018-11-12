@@ -1,77 +1,103 @@
-type Pixels = u32;
-const BRICK_WIDTH: Pixels = 150;
-const BRICK_HEIGHT: Pixels = 75;
-const BRICK_V_PAD: Pixels = 10;
-const BRICK_H_PAD: Pixels = 10;
+extern crate failure;
+extern crate sdl2;
 
-const BALL_RADIUS: Pixels = 100;
+pub mod ball;
+pub mod brick;
 
-struct Brick {
-    x: u32,
-    y: u32, 
-}
+use std::time::Instant;
 
-impl Brick {
-    fn get_x(&self) -> (u32, u32) {
-        let xg: u32 = (self.x * BRICK_WIDTH + (self.x + 1) * BRICK_H_PAD) as u32;
-        let xd: u32 = ((self.x + 1) * BRICK_WIDTH + (self.x + 1) * BRICK_H_PAD) as u32;
-        (xg, xd)
-    }
-    fn get_y(&self) -> (u32, u32) {
-        let yh: u32 = (self.y * BRICK_HEIGHT + (self.y + 1) * BRICK_V_PAD) as u32;
-        let yb: u32 = ((self.y + 1) * BRICK_HEIGHT + (self.y + 1) * BRICK_V_PAD) as u32;
-        (yh, yb)
-    }
-}
+use failure::{err_msg, Error};
+use sdl2::event::{Event, WindowEvent};
+use sdl2::keyboard::{KeyboardState, Keycode, Scancode};
+use sdl2::pixels::Color;
+use sdl2::render::Canvas;
+use sdl2::video::Window;
+use sdl2::{EventPump, Sdl};
 
-struct Ball {
-    x: u32,
-    y: u32,
-}
+const BRICK_COL: u32 = 10;
+const BRICK_ROW: u32 = 6;
 
-impl Ball {
-    fn collides(&self, brick: &Brick) -> bool {
-        let (xg, xd) = brick.get_x();
-        let (yh, yb) = brick.get_y();
-        if self.x > xg && self.x < xd &&
-           self.y > yh && self.y < yb {
-            return true;
+fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> {
+    let sdl_context = sdl2::init().map_err(err_msg)?;
+    let video_subsystem = sdl_context.video().map_err(err_msg)?;
+
+    let window = video_subsystem
+        .window("Arkanoid",
+                (brick::BRICK_WIDTH*BRICK_COL + brick::BRICK_H_PAD*(BRICK_COL+1)),
+                (brick::BRICK_HEIGHT*BRICK_ROW + brick::BRICK_V_PAD*(BRICK_ROW+1) + 300))
+        .position_centered()
+        //.resizable()
+        .allow_highdpi()
+        .build()?;
+
+    let mut canvas = window.into_canvas().accelerated().present_vsync().build()?;
+    canvas.set_draw_color(Color::RGB(0, 255, 255));
+    canvas.clear();
+    canvas.present();
+
+    let event_pump = sdl_context.event_pump().map_err(err_msg)?;
+
+    let mut bricks: Vec<brick::Brick> = vec![];
+    for x in 0..BRICK_COL {
+        for y in 0..BRICK_ROW {
+            bricks.push(brick::Brick {x: x, y: y});
         }
-        return false;
     }
+    let bricks = bricks;
+    
+    Ok((sdl_context, canvas, event_pump, bricks))
 }
 
 fn main() {
-    let w: u32 = 10;
-    let h: u32 = 6;
+    let (_sdl_context, mut canvas, mut event_pump, mut bricks) = init().unwrap();
 
-    let mut bricks: Vec<Brick> = vec![];
-    for x in 0..h {
-        for y in 0..w {
-            bricks.push(Brick {x: x, y: y});
-        }
-    }
-    let ball: Ball = Ball{x: 100, y: 100};
+    let mut ball: ball::Ball = ball::Ball{x: 100, y: 100};
 
     for brick in &bricks {
         print!("{}, {}\t", brick.x, brick.y);
     }
     println!();
 
-    let mut remove: i64 = -1;
-    for (i, brick) in bricks.iter().enumerate() {
-        if ball.collides(brick) {
-            println!("{}, {}", brick.x, brick.y);
-            remove = i as i64;
-        }
-    }
-    bricks.remove(remove as usize);
+    'running: loop {
+        for event in event_pump.poll_iter() {
+            match event {
+                Event::Quit { .. }
+                | Event::KeyDown {
+                    keycode: Some(Keycode::Escape), ..
+                } => break 'running,
 
-    for brick in &bricks {
-        print!("{}, {}\t", brick.x, brick.y);
+                _ => {}
+            }
+        }
+
+        let mut remove: i64 = -1;
+        for (i, brick) in bricks.iter().enumerate() {
+            if ball.collides(brick) {
+                println!("{}, {}", brick.x, brick.y);
+                remove = i as i64;
+            }
+        }
+        if remove > 0 && remove < (bricks.len() as i64) {
+            bricks.remove(remove as usize);
+        }
+
+        canvas.set_draw_color(Color::RGB(0, 0, 0));
+        canvas.clear();
+        for brick in &bricks {
+            canvas.set_draw_color(Color::RGBA(200, 0, 200, 200));
+            
+            let (xg, xd) = brick.get_x();
+            let (yh, yb) = brick.get_y();
+            let result = canvas.fill_rect(sdl2::rect::Rect::new(xg as i32, yh as i32, xd - xg, yb - yh));
+        }
+        canvas.set_draw_color(Color::RGBA(100, 200, 0, 200));
+        let result = canvas.fill_rect(
+            sdl2::rect::Rect::new(ball.x as i32, ball.y as i32, ball::BALL_RADIUS, ball::BALL_RADIUS));
+        ball = ball::Ball {x: ball.x+1, y: ball.y+1};
+        canvas.present();
     }
-    println!();
 }
+
 
 fn indices(index: u32, height: u8, width: u8) -> (u8, u8) {
     assert_eq!(height, 6);
@@ -80,3 +106,5 @@ fn indices(index: u32, height: u8, width: u8) -> (u8, u8) {
     let y: u8 = (index % width as u32) as u8;
     (x, y)
 }
+
+
