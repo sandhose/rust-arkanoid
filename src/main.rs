@@ -3,8 +3,12 @@ extern crate sdl2;
 
 pub mod ball;
 pub mod brick;
+pub mod traits;
 
+use std::f64::consts::PI;
 use std::time::Instant;
+
+use traits::{UpdateFrame, Renderable, Updatable};
 
 use failure::{err_msg, Error};
 use sdl2::event::{Event, WindowEvent};
@@ -51,7 +55,8 @@ fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> 
 fn main() {
     let (_sdl_context, mut canvas, mut event_pump, mut bricks) = init().unwrap();
 
-    let mut ball: ball::Ball = ball::Ball{x: 100, y: 100};
+    let mut ball: ball::Ball = ball::Ball{position: (100, 100),
+        angle: -PI/5., color: Color::RGBA(120, 120, 200, 230)};
 
     for brick in &bricks {
         print!("{}, {}\t", brick.x, brick.y);
@@ -91,9 +96,8 @@ fn main() {
             let result = canvas.fill_rect(sdl2::rect::Rect::new(xg as i32, yh as i32, xd - xg, yb - yh));
         }
         canvas.set_draw_color(Color::RGBA(100, 200, 0, 200));
-        let result = canvas.fill_rect(
-            sdl2::rect::Rect::new(ball.x as i32, ball.y as i32, ball::BALL_RADIUS, ball::BALL_RADIUS));
-        ball = ball::Ball {x: ball.x+1, y: ball.y+1};
+        ball.update();
+        ball.render(&mut canvas);
         canvas.present();
     }
 }
