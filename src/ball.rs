@@ -1,3 +1,4 @@
+use utils::distance;
 use brick::Brick;
 use traits::{Updatable, Renderable};
 
@@ -5,18 +6,10 @@ use failure::{err_msg, Error};
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
-
-#[derive(PartialEq, Eq)]
-pub enum Side {
-    No,
-    Left,
-    Right,
-    Up,
-    Down,
-}
+use sdl2::gfx::primitives::DrawRenderer;
 
 type Pixels = u32;
-pub const BALL_RADIUS: Pixels = 60;
+pub const BALL_RADIUS: Pixels = 20;
 
 pub struct Ball {
     pub position: (u32, u32),
@@ -25,10 +18,16 @@ pub struct Ball {
 }
 
 impl Ball {
-    pub fn collides(&self, brick: &Brick) -> Side {
+    pub fn collides(&self, brick: &Brick) -> (bool, f32) {
         let (xg, xd) = brick.get_x();
         let (yh, yb) = brick.get_y();
-        return Side::No;
+        let corners = [(xg, yh), (xg, yb), (xd, yh), (xd, yb)];
+        for corner in corners.iter() {
+            if distance(*corner, self.position) < BALL_RADIUS {
+                return (true, 90.0);
+            }
+        }
+        return (false, 0.0);
     }
     pub fn bounce(&mut self, new_speed: (u32, u32)) {
         self.speed = new_speed;
@@ -51,13 +50,12 @@ where
         -> Result<(), Error>
     {
         canvas.set_draw_color(self.color);
-        canvas
-            .fill_rect(Rect::new(
-                (self.position.0 - (BALL_RADIUS / 2)) as i32,
-                (self.position.1 - (BALL_RADIUS / 2)) as i32,
-                BALL_RADIUS,
-                BALL_RADIUS,
-            )).map_err(err_msg)?;
+        canvas.filled_circle(
+            self.position.0 as i16,
+            self.position.1 as i16,
+            BALL_RADIUS as i16,
+            self.color,
+        );
         Ok(())
     }
 }

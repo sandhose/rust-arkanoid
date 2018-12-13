@@ -6,5 +6,8 @@ authors = [
 ]
 
 [dependencies]
-sdl2 = "0.31.0"
 failure = "0.1.2"
+
+[dependencies.sdl2]
+version = "0.32.0"
+features = ["gfx"]

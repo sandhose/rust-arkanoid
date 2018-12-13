@@ -4,6 +4,7 @@ extern crate sdl2;
 pub mod ball;
 pub mod brick;
 pub mod traits;
+pub mod utils;
 
 use std::f64::consts::PI;
 use std::time::Instant;
@@ -76,7 +77,7 @@ fn main() {
 
         let mut remove: i64 = -1;
         for (i, brick) in bricks.iter().enumerate() {
-            if ball.collides(brick) != ball::Side::No {
+            if ball.collides(brick).0 {
 //                ball.bounce(brick);
                 println!("{}, {}", brick.x, brick.y);
                 remove = i as i64;
