@@ -62,11 +62,6 @@ fn main() {
         color: Color::RGBA(120, 120, 200, 230)
     };
 
-    for brick in &bricks {
-        print!("{}, {}\t", brick.x, brick.y);
-    }
-    println!();
-
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
@@ -81,18 +76,11 @@ fn main() {
 
         let mut remove: i64 = -1;
         for (i, brick) in bricks.iter().enumerate() {
-            //match ball.collides(brick) {
-            //    ball::Side::Right => println!("RIGHT"),
-            //    ball::Side::Left => println!("LEFT"),
-            //    ball::Side::Up => println!("UP"),
-            //    ball::Side::Down => println!("DOWN"),
-            //    ball::Side::No => println!("NONE"),
-            //}
-//            if ball.collides(brick) != Side::none {
+            if ball.collides(brick) != ball::Side::No {
 //                ball.bounce(brick);
-//                println!("{}, {}", brick.x, brick.y);
-//                remove = i as i64;
-//            }
+                println!("{}, {}", brick.x, brick.y);
+                remove = i as i64;
+            }
         }
         if remove > 0 && remove < (bricks.len() as i64) {
             bricks.remove(remove as usize);

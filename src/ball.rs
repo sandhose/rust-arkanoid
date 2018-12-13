@@ -6,6 +6,7 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
 
+#[derive(PartialEq, Eq)]
 pub enum Side {
     No,
     Left,
@@ -27,22 +28,6 @@ impl Ball {
     pub fn collides(&self, brick: &Brick) -> Side {
         let (xg, xd) = brick.get_x();
         let (yh, yb) = brick.get_y();
-        if self.position.1 > yh && self.position.1 < yb {
-            if self.position.0 - (BALL_RADIUS / 2) > xg {
-                return Side::Left;
-            }
-            if self.position.0 - (BALL_RADIUS / 2) < xd {
-                return Side::Right;
-            }
-        }
-        if self.position.0 > xg && self.position.0 < xd {
-            if self.position.1 - (BALL_RADIUS / 2) > yh {
-                return Side::Up;
-            }
-            if self.position.1 - (BALL_RADIUS / 2) < yb {
-                return Side::Down;
-            }
-        }
         return Side::No;
     }
     pub fn bounce(&mut self, new_speed: (u32, u32)) {
