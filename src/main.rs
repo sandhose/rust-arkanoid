@@ -44,7 +44,8 @@ fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> 
     let mut bricks: Vec<brick::Brick> = vec![];
     for x in 0..BRICK_COL {
         for y in 0..BRICK_ROW {
-            bricks.push(brick::Brick {x: x, y: y});
+//            bricks.push(brick::Brick {x: x, y: y});
+            bricks.push(brick::BrickFactory::simple_brick(x, y));
         }
     }
     let bricks = bricks;
@@ -55,8 +56,11 @@ fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> 
 fn main() {
     let (_sdl_context, mut canvas, mut event_pump, mut bricks) = init().unwrap();
 
-    let mut ball: ball::Ball = ball::Ball{position: (100, 100),
-        angle: -PI/5., color: Color::RGBA(120, 120, 200, 230)};
+    let mut ball: ball::Ball = ball::Ball {
+        position: (100, 100),
+        speed: (1, 1),
+        color: Color::RGBA(120, 120, 200, 230)
+    };
 
     for brick in &bricks {
         print!("{}, {}\t", brick.x, brick.y);
@@ -77,10 +81,18 @@ fn main() {
 
         let mut remove: i64 = -1;
         for (i, brick) in bricks.iter().enumerate() {
-            if ball.collides(brick) {
-                println!("{}, {}", brick.x, brick.y);
-                remove = i as i64;
-            }
+            //match ball.collides(brick) {
+            //    ball::Side::Right => println!("RIGHT"),
+            //    ball::Side::Left => println!("LEFT"),
+            //    ball::Side::Up => println!("UP"),
+            //    ball::Side::Down => println!("DOWN"),
+            //    ball::Side::No => println!("NONE"),
+            //}
+//            if ball.collides(brick) != Side::none {
+//                ball.bounce(brick);
+//                println!("{}, {}", brick.x, brick.y);
+//                remove = i as i64;
+//            }
         }
         if remove > 0 && remove < (bricks.len() as i64) {
             bricks.remove(remove as usize);
@@ -89,26 +101,10 @@ fn main() {
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
         for brick in &bricks {
-            canvas.set_draw_color(Color::RGBA(200, 0, 200, 200));
-            
-            let (xg, xd) = brick.get_x();
-            let (yh, yb) = brick.get_y();
-            let result = canvas.fill_rect(sdl2::rect::Rect::new(xg as i32, yh as i32, xd - xg, yb - yh));
+            let result = brick.render(&mut canvas);
         }
-        canvas.set_draw_color(Color::RGBA(100, 200, 0, 200));
         ball.update();
-        ball.render(&mut canvas);
+        let result = ball.render(&mut canvas);
         canvas.present();
     }
 }
-
-
-fn indices(index: u32, height: u8, width: u8) -> (u8, u8) {
-    assert_eq!(height, 6);
-    assert_eq!(width, 10);
-    let x: u8 = (index / width as u32) as u8;
-    let y: u8 = (index % width as u32) as u8;
-    (x, y)
-}
-
-

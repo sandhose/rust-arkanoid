@@ -11,6 +11,9 @@ where
 }
 
 pub trait Updatable {
-    //fn update(&mut self, frame: &UpdateFrame);
     fn update(&mut self);
+}
+
+pub trait Collisionable {
+    
 }

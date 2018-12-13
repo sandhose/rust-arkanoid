@@ -1,38 +1,60 @@
 use brick::Brick;
-use traits::{Updatable, Renderable, UpdateFrame};
+use traits::{Updatable, Renderable};
 
 use failure::{err_msg, Error};
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
 
+pub enum Side {
+    No,
+    Left,
+    Right,
+    Up,
+    Down,
+}
 
 type Pixels = u32;
 pub const BALL_RADIUS: Pixels = 60;
 
 pub struct Ball {
     pub position: (u32, u32),
-    pub angle: f64,
+    pub speed: (u32, u32),
     pub color: Color,
 }
 
 impl Ball {
-    pub fn collides(&self, brick: &Brick) -> bool {
+    pub fn collides(&self, brick: &Brick) -> Side {
         let (xg, xd) = brick.get_x();
         let (yh, yb) = brick.get_y();
-        if self.position.0 > xg && self.position.0 < xd &&
-           self.position.1 > yh && self.position.1 < yb {
-            return true;
+        if self.position.1 > yh && self.position.1 < yb {
+            if self.position.0 - (BALL_RADIUS / 2) > xg {
+                return Side::Left;
+            }
+            if self.position.0 - (BALL_RADIUS / 2) < xd {
+                return Side::Right;
+            }
         }
-        return false;
+        if self.position.0 > xg && self.position.0 < xd {
+            if self.position.1 - (BALL_RADIUS / 2) > yh {
+                return Side::Up;
+            }
+            if self.position.1 - (BALL_RADIUS / 2) < yb {
+                return Side::Down;
+            }
+        }
+        return Side::No;
+    }
+    pub fn bounce(&mut self, new_speed: (u32, u32)) {
+        self.speed = new_speed;
     }
 }
 
 impl Updatable for Ball {
     //fn update(&mut self, frame: &UpdateFrame) {
     fn update(&mut self) {
-        self.position.0 += 1;
-        self.position.1 += 1;
+        self.position.0 += self.speed.0;
+        self.position.1 += self.speed.1;
     }
 }
 
