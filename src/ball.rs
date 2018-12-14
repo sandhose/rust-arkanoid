@@ -18,17 +18,6 @@ pub struct Ball {
 }
 
 impl Ball {
-    pub fn collides(&self, brick: &Brick) -> (bool, f32) {
-        let (xg, xd) = brick.get_x();
-        let (yh, yb) = brick.get_y();
-        let corners = [(xg, yh), (xg, yb), (xd, yh), (xd, yb)];
-        for corner in corners.iter() {
-            if distance(*corner, self.position) < BALL_RADIUS {
-                return (true, 90.0);
-            }
-        }
-        return (false, 0.0);
-    }
     pub fn bounce(&mut self, new_speed: (u32, u32)) {
         self.speed = new_speed;
     }

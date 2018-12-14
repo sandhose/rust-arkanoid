@@ -9,7 +9,7 @@ pub mod utils;
 use std::f64::consts::PI;
 use std::time::Instant;
 
-use traits::{UpdateFrame, Renderable, Updatable};
+use traits::*;
 
 use failure::{err_msg, Error};
 use sdl2::event::{Event, WindowEvent};
@@ -28,8 +28,8 @@ fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> 
 
     let window = video_subsystem
         .window("Arkanoid",
-                (brick::BRICK_WIDTH*BRICK_COL + brick::BRICK_H_PAD*(BRICK_COL+1)),
-                (brick::BRICK_HEIGHT*BRICK_ROW + brick::BRICK_V_PAD*(BRICK_ROW+1) + 300))
+                brick::BRICK_WIDTH*BRICK_COL + brick::BRICK_H_PAD*(BRICK_COL+1),
+                brick::BRICK_HEIGHT*BRICK_ROW + brick::BRICK_V_PAD*(BRICK_ROW+1) + 300)
         .position_centered()
         //.resizable()
         .allow_highdpi()
@@ -77,7 +77,7 @@ fn main() {
 
         let mut remove: i64 = -1;
         for (i, brick) in bricks.iter().enumerate() {
-            if ball.collides(brick).0 {
+            if brick.collides(&ball).0 {
 //                ball.bounce(brick);
                 println!("{}, {}", brick.x, brick.y);
                 remove = i as i64;

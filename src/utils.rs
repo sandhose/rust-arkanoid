@@ -1,4 +1,5 @@
-type Point = (u32, u32);
+pub type Point = (u32, u32);
+pub type Pixels = u32;
 
 pub fn distance(p1_u32: Point, p2_u32: Point) -> u32{
     let p1 = (p1_u32.0 as f64, p1_u32.1 as f64);
