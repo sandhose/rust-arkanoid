@@ -78,22 +78,6 @@ impl Collisionable for Brick {
     fn collides(&self, ball: &ball::Ball) -> utils::CollisionResult {
         let (xg, xd) = self.get_x();
         let (yh, yb) = self.get_y();
-        let corners = [
-            utils::Point {x: xg, y: yh},
-            utils::Point {x: xg, y: yb},
-            utils::Point {x: xd, y: yh},
-            utils::Point {x: xd, y: yb},
-        ];
-        for corner in corners.iter() {
-            if utils::distance(corner, &ball.position) < ball::BALL_RADIUS {
-                let bounce_vector = utils::angle_clsn_bnce_vect(
-                    corner, &ball.position); 
-                return utils::CollisionResult {
-                    collided: true,
-                    collision_vector: bounce_vector,
-                };
-            }
-        }
         if (ball.position.x + ball::BALL_RADIUS) > xg &&
            ball.position.x < (xd + ball::BALL_RADIUS) &&
            ball.position.y > yh && ball.position.y < yb
@@ -111,6 +95,22 @@ impl Collisionable for Brick {
                 collided: true,
                 collision_vector: utils::Point {x: 1.0, y: -1.0}
             };
+        }
+        let corners = [
+            utils::Point {x: xg, y: yh},
+            utils::Point {x: xg, y: yb},
+            utils::Point {x: xd, y: yh},
+            utils::Point {x: xd, y: yb},
+        ];
+        for corner in corners.iter() {
+            if utils::distance(corner, &ball.position) < ball::BALL_RADIUS {
+                let bounce_vector = utils::angle_clsn_bnce_vect(
+                    corner, &ball.position); 
+                return utils::CollisionResult {
+                    collided: true,
+                    collision_vector: bounce_vector,
+                };
+            }
         }
         return utils::CollisionResult {
             collided: false,
