@@ -31,14 +31,16 @@ impl Wall {
 impl Collisionable for Wall {
     fn collides(&self, ball: &ball::Ball) -> utils::CollisionResult {
         // TODO : Correct collision detection for walls
-        if ball.position.x < self.limits.x &&
-           ball.position.y < self.limits.y
+        if (ball.position.x + ball::BALL_RADIUS) > self.origin.x &&
+            ball.position.x < (self.limits.x + ball::BALL_RADIUS) &&
+           (ball.position.y + ball::BALL_RADIUS) > self.origin.y &&
+            ball.position.y < (self.limits.y + ball::BALL_RADIUS)
         {
             return utils::CollisionResult {
                 collided: true,
                 collision_vector: utils::Point {
-                    x: 1.0 * self.bounce_direction.x,
-                    y: 1.0 * self.bounce_direction.y,
+                    x: 1.0 * self.bounce_direction.x * ball.speed.x,
+                    y: 1.0 * self.bounce_direction.y * ball.speed.y,
                 },
             };
         }
@@ -51,8 +53,7 @@ impl Collisionable for Wall {
         }
     }
 }
-// TODO :
-// impl Renderable for Wall
+
 impl<T> Renderable<T> for Wall
 where
     T: RenderTarget,
