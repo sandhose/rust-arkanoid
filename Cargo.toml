@@ -2,7 +2,8 @@
 name = "arkanoid"
 version = "0.1.0"
 authors = [
-  "Gabriel Poittevin <gabriel.poittevin@gmail.com>"
+  "Quentin Gliech <quentingliech@gmail.com>",
+  "Gabriel Poittevin <gabriel.poittevin@gmail.com>",
 ]
 
 [dependencies]
