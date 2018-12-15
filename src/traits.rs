@@ -19,5 +19,7 @@ pub trait Updatable {
 }
 
 pub trait Collisionable {
+    fn get_x(&self) -> (utils::Pixels, utils::Pixels);
+    fn get_y(&self) -> (utils::Pixels, utils::Pixels);
     fn collides(&self, &ball::Ball) -> utils::CollisionResult;
 }

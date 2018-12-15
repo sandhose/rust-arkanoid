@@ -6,6 +6,7 @@ pub mod brick;
 pub mod traits;
 pub mod utils;
 pub mod wall;
+pub mod player;
 
 use traits::*;
 
@@ -20,11 +21,10 @@ use sdl2::{EventPump, Sdl};
 const BRICK_COL: u32 = 10;
 const BRICK_ROW: u32 = 6;
 
-fn init()
-    -> Result<
-        (Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>, Vec<wall::Wall>),
-        Error
-    >
+fn init() -> Result<(
+    Sdl, Canvas<Window>, EventPump,
+    Vec<brick::Brick>, Vec<wall::Wall>, player::Player
+), Error>
 {
     let sdl_context = sdl2::init().map_err(err_msg)?;
     let video_subsystem = sdl_context.video().map_err(err_msg)?;
@@ -66,12 +66,19 @@ fn init()
     }
     let bricks = bricks;
     let walls = wall::WallFactory::make_walls(game_height, game_width);
+    let player = player::Player {
+        position: utils::Point {
+            x: game_width * 0.5,
+            y: game_height - 30.0,
+        },
+        color: Color::RGBA(255, 0, 0, 255),
+    };
     
-    Ok((sdl_context, canvas, event_pump, bricks, walls))
+    Ok((sdl_context, canvas, event_pump, bricks, walls, player))
 }
 
 fn main() {
-    let (_sdl_context, mut canvas, mut event_pump, mut bricks, walls)
+    let (_sdl_context, mut canvas, mut event_pump, mut bricks, walls, player)
         = init().unwrap();
 
     let mut ball: ball::Ball = ball::Ball {
@@ -120,6 +127,7 @@ fn main() {
         }
         ball.update();
         let result = ball.render(&mut canvas);
+        let result = player.render(&mut canvas);
         canvas.present();
     }
 }

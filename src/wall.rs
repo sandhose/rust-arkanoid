@@ -29,26 +29,26 @@ impl Wall {
 }
 
 impl Collisionable for Wall {
+    fn get_x(&self) -> (utils::Pixels, utils::Pixels) {
+        return (
+            self.origin.x,
+            self.limits.x,
+        );
+    }
+    fn get_y(&self) -> (utils::Pixels, utils::Pixels) {
+        return (
+            self.origin.y,
+            self.limits.y,
+        );
+    }
+
     fn collides(&self, ball: &ball::Ball) -> utils::CollisionResult {
-        // TODO : Correct collision detection for walls
-        if (ball.position.x + ball::BALL_RADIUS) > self.origin.x &&
-            ball.position.x < (self.limits.x + ball::BALL_RADIUS) &&
-           (ball.position.y + ball::BALL_RADIUS) > self.origin.y &&
-            ball.position.y < (self.limits.y + ball::BALL_RADIUS)
-        {
-            return utils::CollisionResult {
-                collided: true,
-                collision_vector: utils::Point {
-                    x: 1.0 * self.bounce_direction.x * ball.speed.x,
-                    y: 1.0 * self.bounce_direction.y * ball.speed.y,
-                },
-            };
-        }
+        let collision = utils::collision::<Wall>(&self, &ball);
         return utils::CollisionResult {
-            collided: false,
+            collided: collision.collided,
             collision_vector: utils::Point {
-                x: 1.0,
-                y: 1.0,
+                x: collision.collision_vector.x * self.bounce_direction.x,
+                y: collision.collision_vector.y * self.bounce_direction.y,
             }
         }
     }
@@ -80,7 +80,7 @@ pub mod WallFactory {
             limits: utils::Point {x: width, y: WALL_THICKNESS},
             bounce_direction: utils::Point {
                 x: 1.0,
-                y: -1.0
+                y: 1.0
             },
         };
     }
@@ -89,7 +89,7 @@ pub mod WallFactory {
             origin: utils::Point {x: 0.0, y: 0.0},
             limits: utils::Point {x: WALL_THICKNESS, y: height},
             bounce_direction: utils::Point {
-                x: -1.0,
+                x: 1.0,
                 y: 1.0
             },
         };
@@ -99,7 +99,7 @@ pub mod WallFactory {
             origin: utils::Point {x: width - WALL_THICKNESS, y: 0.0},
             limits: utils::Point {x: width, y: height},
             bounce_direction: utils::Point {
-                x: -1.0,
+                x: 1.0,
                 y: 1.0
             },
         };
@@ -107,7 +107,7 @@ pub mod WallFactory {
     fn pit(height: utils::Pixels, width: utils::Pixels) -> Wall {
         return Wall {
             origin: utils::Point {x: 0.0, y: height - WALL_THICKNESS},
-            limits: utils::Point {x: height, y: width},
+            limits: utils::Point {x: width, y: height},
             bounce_direction: utils::Point {
                 x: 0.0,
                 y: 0.0

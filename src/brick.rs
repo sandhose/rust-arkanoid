@@ -27,27 +27,7 @@ pub struct Brick {
 }
 
 impl Brick {
-    pub fn get_x(&self) -> (utils::Pixels, utils::Pixels) {
-        return (
-            (self.position.x * BRICK_WIDTH +
-                (self.position.x + 1.0) * BRICK_H_PAD +
-                wall::WALL_THICKNESS),
-            ((self.position.x + 1.0) * BRICK_WIDTH +
-                (self.position.x + 1.0) * BRICK_H_PAD) +
-                wall::WALL_THICKNESS,
-        );
     }
-    pub fn get_y(&self) -> (utils::Pixels, utils::Pixels) {
-        return (
-            (self.position.y * BRICK_HEIGHT +
-                (self.position.y + 1.0) * BRICK_V_PAD) +
-                wall::WALL_THICKNESS,
-            ((self.position.y + 1.0) * BRICK_HEIGHT +
-                (self.position.y + 1.0) * BRICK_V_PAD) +
-                wall::WALL_THICKNESS,
-        );
-    }
-}
 
 impl Updatable for Brick {
     fn update(&mut self) {
@@ -75,55 +55,29 @@ where
 }
 
 impl Collisionable for Brick {
+    fn get_x(&self) -> (utils::Pixels, utils::Pixels) {
+        return (
+            (self.position.x * BRICK_WIDTH +
+                (self.position.x + 1.0) * BRICK_H_PAD +
+                wall::WALL_THICKNESS),
+            ((self.position.x + 1.0) * BRICK_WIDTH +
+                (self.position.x + 1.0) * BRICK_H_PAD) +
+                wall::WALL_THICKNESS,
+        );
+    }
+    fn get_y(&self) -> (utils::Pixels, utils::Pixels) {
+        return (
+            (self.position.y * BRICK_HEIGHT +
+                (self.position.y + 1.0) * BRICK_V_PAD) +
+                wall::WALL_THICKNESS,
+            ((self.position.y + 1.0) * BRICK_HEIGHT +
+                (self.position.y + 1.0) * BRICK_V_PAD) +
+                wall::WALL_THICKNESS,
+        );
+    }
+
     fn collides(&self, ball: &ball::Ball) -> utils::CollisionResult {
-        let (xg, xd) = self.get_x();
-        let (yh, yb) = self.get_y();
-        if (ball.position.x + ball::BALL_RADIUS) > xg &&
-           ball.position.x < (xd + ball::BALL_RADIUS) &&
-           ball.position.y > yh && ball.position.y < yb
-        {
-            return utils::CollisionResult {
-                collided: true,
-                collision_vector: utils::Point {
-                    x: -1.0 * ball.speed.x,
-                    y: 1.0 * ball.speed.y,
-                },
-            };
-        }
-        if (ball.position.y + ball::BALL_RADIUS) > yh &&
-           ball.position.y < (yb + ball::BALL_RADIUS) &&
-           ball.position.x > xg && ball.position.x < xd
-        {
-            return utils::CollisionResult {
-                collided: true,
-                collision_vector: utils::Point {
-                    x: 1.0 * ball.speed.x,
-                    y: -1.0 * ball.speed.y,
-                },
-            };
-        }
-        let corners = [
-            utils::Point {x: xg, y: yh},
-            utils::Point {x: xg, y: yb},
-            utils::Point {x: xd, y: yh},
-            utils::Point {x: xd, y: yb},
-        ];
-        for corner in corners.iter() {
-            if utils::distance(corner, &ball.position) < ball::BALL_RADIUS {
-                let bounce_vector = utils::angle_clsn_bnce_vect(corner, &ball); 
-                return utils::CollisionResult {
-                    collided: true,
-                    collision_vector: bounce_vector,
-                };
-            }
-        }
-        return utils::CollisionResult {
-            collided: false,
-            collision_vector: utils::Point {
-                x: 1.0 * ball.speed.x,
-                y: 1.0 * ball.speed.y,
-            },
-        };
+        return utils::collision::<Brick>(self, ball);
     }
 }
 
