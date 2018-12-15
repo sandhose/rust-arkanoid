@@ -82,7 +82,7 @@ impl Collisionable for Brick {
         ];
         for corner in corners.iter() {
             if utils::distance(corner, &ball.position) < ball::BALL_RADIUS {
-                return (true, (-1.0, 1.0));
+                return (true, (1.0, 1.0));
             }
         }
         if (ball.position.x + ball::BALL_RADIUS) > xg &&

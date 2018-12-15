@@ -83,9 +83,14 @@ fn main() {
 
         let mut remove: i64 = -1;
         for (i, brick) in bricks.iter().enumerate() {
-            if brick.collides(&ball).0 {
-//                ball.bounce(brick);
-                println!("{}, {}", brick.position.x, brick.position.y);
+            let collision_result: (bool, (f32, f32)) = brick.collides(&ball);
+            if collision_result.0 {
+                ball.bounce(
+                    utils::Point {
+                        x: (collision_result.1).0,
+                        y: (collision_result.1).1,
+                    }
+                );
                 remove = i as i64;
             }
         }
