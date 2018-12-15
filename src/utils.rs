@@ -1,3 +1,5 @@
+use ball;
+
 pub struct Point {pub x: f32, pub y: f32}
 pub type Pixels = f32;
 pub struct CollisionResult {
@@ -14,10 +16,10 @@ pub fn distance(p1: &Point, p2: &Point) -> f32 {
 // Computes the vector according to which the ball
 // bounces if it hits the angle of a brick
 // Uses the coordinates of both the angle and the ball
-pub fn angle_clsn_bnce_vect(angle: &Point, ball: &Point) -> Point {
+pub fn angle_clsn_bnce_vect(angle: &Point, ball: &ball::Ball) -> Point {
     return Point {
-        x: 1.0,
-        y: 1.0,
+        x: ball.speed.y,
+        y: ball.speed.x,
     };
 }
 
