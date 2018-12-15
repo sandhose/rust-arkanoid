@@ -7,6 +7,7 @@ pub mod traits;
 pub mod utils;
 pub mod wall;
 pub mod player;
+pub mod store;
 
 use traits::*;
 
@@ -73,7 +74,7 @@ fn init() -> Result<(
         },
         color: Color::RGBA(255, 0, 0, 255),
     };
-    
+
     Ok((sdl_context, canvas, event_pump, bricks, walls, player))
 }
 
