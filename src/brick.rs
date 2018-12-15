@@ -2,8 +2,10 @@ use traits::{Updatable, Renderable, Collisionable};
 use sdl2::render::{Canvas, RenderTarget};
 use sdl2::rect::Rect;
 use failure::{err_msg};
+
 use ball;
 use utils;
+use wall;
 
 pub const BRICK_WIDTH: utils::Pixels = 80.0;
 pub const BRICK_HEIGHT: utils::Pixels = 40.0;
@@ -28,17 +30,21 @@ impl Brick {
     pub fn get_x(&self) -> (utils::Pixels, utils::Pixels) {
         return (
             (self.position.x * BRICK_WIDTH +
-                (self.position.x + 1.0) * BRICK_H_PAD),
+                (self.position.x + 1.0) * BRICK_H_PAD +
+                wall::WALL_THICKNESS),
             ((self.position.x + 1.0) * BRICK_WIDTH +
-                (self.position.x + 1.0) * BRICK_H_PAD),
+                (self.position.x + 1.0) * BRICK_H_PAD) +
+                wall::WALL_THICKNESS,
         );
     }
     pub fn get_y(&self) -> (utils::Pixels, utils::Pixels) {
         return (
             (self.position.y * BRICK_HEIGHT +
-                (self.position.y + 1.0) * BRICK_V_PAD),
+                (self.position.y + 1.0) * BRICK_V_PAD) +
+                wall::WALL_THICKNESS,
             ((self.position.y + 1.0) * BRICK_HEIGHT +
-                (self.position.y + 1.0) * BRICK_V_PAD),
+                (self.position.y + 1.0) * BRICK_V_PAD) +
+                wall::WALL_THICKNESS,
         );
     }
 }
@@ -80,9 +86,11 @@ impl Collisionable for Brick {
         ];
         for corner in corners.iter() {
             if utils::distance(corner, &ball.position) < ball::BALL_RADIUS {
+                let bounce_vector = utils::angle_clsn_bnce_vect(
+                    corner, &ball.position); 
                 return utils::CollisionResult {
                     collided: true,
-                    collision_vector: utils::Point {x: 1.0, y: 1.0}
+                    collision_vector: bounce_vector,
                 };
             }
         }

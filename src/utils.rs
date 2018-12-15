@@ -5,10 +5,20 @@ pub struct CollisionResult {
     pub collision_vector: Point,
 }
 
-pub fn distance(p1: &Point, p2: &Point) -> f32{
+pub fn distance(p1: &Point, p2: &Point) -> f32 {
     let l = (p1.x - p2.x).abs();
     let h = (p1.y - p2.y).abs();
     return (l*l + h*h).sqrt();
+}
+
+// Computes the vector according to which the ball
+// bounces if it hits the angle of a brick
+// Uses the coordinates of both the angle and the ball
+pub fn angle_clsn_bnce_vect(angle: &Point, ball: &Point) -> Point {
+    return Point {
+        x: 1.0,
+        y: 1.0,
+    };
 }
 
 #[cfg(test)]

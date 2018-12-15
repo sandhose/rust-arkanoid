@@ -1,13 +1,17 @@
+use sdl2::render::{Canvas, RenderTarget};
+use sdl2::rect::Rect;
+use failure::{err_msg};
+
 use ball;
 use traits::{Collisionable, Renderable};
 use utils;
 
-const WALL_THICKNESS: utils::Pixels = 10.0;
+pub const WALL_THICKNESS: utils::Pixels = 10.0;
 
 pub struct Wall {
-    origin: utils::Point,
-    limits: utils::Point,
-    bounce_direction: utils::Point,
+    pub origin: utils::Point,
+    pub limits: utils::Point,
+    pub bounce_direction: utils::Point,
 }
 
 impl Wall {
@@ -49,8 +53,24 @@ impl Collisionable for Wall {
 }
 // TODO :
 // impl Renderable for Wall
+impl<T> Renderable<T> for Wall
+where
+    T: RenderTarget,
+{
+    fn render(&self, canvas: &mut Canvas<T>)  -> Result<(), failure::Error> {
+        canvas.set_draw_color(sdl2::pixels::Color::RGBA(127, 127, 127, 255));
+        canvas
+            .fill_rect(Rect::new(
+                self.origin.x as i32,
+                self.origin.y as i32,
+                (self.limits.x - self.origin.x) as u32,
+                (self.limits.y - self.origin.y) as u32,
+            )).map_err(err_msg)?;
+        Ok(())
+    }
+}
 
-mod WallFactory {
+pub mod WallFactory {
     use super::*;
 
     fn top_wall(width: utils::Pixels) -> Wall {
@@ -93,14 +113,7 @@ mod WallFactory {
             },
         }
     }
-    pub fn make_walls(height: utils::Pixels, width: utils::Pixels)
-        -> (Wall, Wall, Wall, Wall)
-    {
-        (
-            top_wall(width),
-            left_wall(height),
-            right_wall(height, width),
-            pit(height, width),
-        )
+    pub fn make_walls(h: utils::Pixels, w: utils::Pixels) -> Vec<Wall> {
+        return vec![top_wall(w), left_wall(h), right_wall(h, w), pit(h, w)];
     }
 }

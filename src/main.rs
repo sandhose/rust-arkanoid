@@ -20,19 +20,27 @@ use sdl2::{EventPump, Sdl};
 const BRICK_COL: u32 = 10;
 const BRICK_ROW: u32 = 6;
 
-fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> {
+fn init()
+    -> Result<
+        (Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>, Vec<wall::Wall>),
+        Error
+    >
+{
     let sdl_context = sdl2::init().map_err(err_msg)?;
     let video_subsystem = sdl_context.video().map_err(err_msg)?;
+
+    let game_width: utils::Pixels = brick::BRICK_WIDTH * (BRICK_COL as f32) +
+        brick::BRICK_H_PAD * ((BRICK_COL as f32) + 1.0) +
+        2.0 * wall::WALL_THICKNESS;
+    let game_height: utils::Pixels = brick::BRICK_HEIGHT * (BRICK_ROW as f32) +
+        brick::BRICK_V_PAD * ((BRICK_ROW as f32) + 1.0) + 300.0 +
+        2.0 * wall::WALL_THICKNESS;
 
     let window = video_subsystem
         .window(
             "Arkanoid",
-            (brick::BRICK_WIDTH * (BRICK_COL as f32) +
-                brick::BRICK_H_PAD * ((BRICK_COL as f32) + 1.0))
-            as u32,
-            (brick::BRICK_HEIGHT * (BRICK_ROW as f32) +
-                brick::BRICK_V_PAD * ((BRICK_ROW as f32) + 1.0) + 300.0)
-            as u32,
+            game_width as u32,
+            game_height as u32,
         )
         .position_centered()
         //.resizable()
@@ -57,12 +65,14 @@ fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> 
         }
     }
     let bricks = bricks;
+    let walls = wall::WallFactory::make_walls(game_height, game_width);
     
-    Ok((sdl_context, canvas, event_pump, bricks))
+    Ok((sdl_context, canvas, event_pump, bricks, walls))
 }
 
 fn main() {
-    let (_sdl_context, mut canvas, mut event_pump, mut bricks) = init().unwrap();
+    let (_sdl_context, mut canvas, mut event_pump, mut bricks, walls)
+        = init().unwrap();
 
     let mut ball: ball::Ball = ball::Ball {
         position: utils::Point {x: 100.0, y: 100.0},
@@ -103,6 +113,9 @@ fn main() {
         canvas.clear();
         for brick in &bricks {
             let result = brick.render(&mut canvas);
+        }
+        for wall in &walls {
+            let result = wall.render(&mut canvas);
         }
         ball.update();
         let result = ball.render(&mut canvas);
