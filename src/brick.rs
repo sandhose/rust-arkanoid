@@ -2,15 +2,15 @@ use sdl2::pixels::Color;
 use traits::{Updatable, Renderable, Collisionable};
 use sdl2::render::{Canvas, RenderTarget};
 use sdl2::rect::Rect;
-use failure::{err_msg, Error};
+use failure::{err_msg};
 use ball;
 use utils;
 use utils::{Point,Pixels};
 
-pub const BRICK_WIDTH: Pixels = 80;
-pub const BRICK_HEIGHT: Pixels = 40;
-pub const BRICK_V_PAD: Pixels = 5;
-pub const BRICK_H_PAD: Pixels = 5;
+pub const BRICK_WIDTH: Pixels = 80.0;
+pub const BRICK_HEIGHT: Pixels = 40.0;
+pub const BRICK_V_PAD: Pixels = 5.0;
+pub const BRICK_H_PAD: Pixels = 5.0;
 
 pub enum BrickType {
     Undefined,
@@ -20,23 +20,28 @@ pub enum BrickType {
 }
 
 pub struct Brick {
-    pub x: u32,
-    pub y: u32,
+    pub position: utils::Point,
     pub breakable: bool,
     pub hitpoints: u8,
     pub color: Color,
 }
 
 impl Brick {
-    pub fn get_x(&self) -> (u32, u32) {
-        let xg: u32 = (self.x * BRICK_WIDTH + (self.x + 1) * BRICK_H_PAD) as u32;
-        let xd: u32 = ((self.x + 1) * BRICK_WIDTH + (self.x + 1) * BRICK_H_PAD) as u32;
-        (xg, xd)
+    pub fn get_x(&self) -> (Pixels, Pixels) {
+        return (
+            (self.position.x * BRICK_WIDTH +
+                (self.position.x + 1.0) * BRICK_H_PAD),
+            ((self.position.x + 1.0) * BRICK_WIDTH +
+                (self.position.x + 1.0) * BRICK_H_PAD),
+        );
     }
-    pub fn get_y(&self) -> (u32, u32) {
-        let yh: u32 = (self.y * BRICK_HEIGHT + (self.y + 1) * BRICK_V_PAD) as u32;
-        let yb: u32 = ((self.y + 1) * BRICK_HEIGHT + (self.y + 1) * BRICK_V_PAD) as u32;
-        (yh, yb)
+    pub fn get_y(&self) -> (Pixels, Pixels) {
+        return (
+            (self.position.y * BRICK_HEIGHT +
+                (self.position.y + 1.0) * BRICK_V_PAD),
+            ((self.position.y + 1.0) * BRICK_HEIGHT +
+                (self.position.y + 1.0) * BRICK_V_PAD),
+        );
     }
 }
 
@@ -58,36 +63,41 @@ where
             .fill_rect(Rect::new(
                 xg as i32,
                 yh as i32,
-                xd - xg,
-                yb - yh,
+                (xd - xg) as u32,
+                (yb - yh) as u32,
             )).map_err(err_msg)?;
         Ok(())
     }
 }
 
 impl Collisionable for Brick {
-    fn collides(&self, ball: &ball::Ball) -> (bool, f32) {
+    fn collides(&self, ball: &ball::Ball) -> (bool, (f32, f32)) {
         let (xg, xd) = self.get_x();
         let (yh, yb) = self.get_y();
-        let corners = [(xg, yh), (xg, yb), (xd, yh), (xd, yb)];
+        let corners = [
+            Point {x: xg, y: yh},
+            Point {x: xg, y: yb},
+            Point {x: xd, y: yh},
+            Point {x: xd, y: yb},
+        ];
         for corner in corners.iter() {
-            if utils::distance(*corner, ball.position) < ball::BALL_RADIUS {
-                return (true, 90.0);
+            if utils::distance(corner, &ball.position) < ball::BALL_RADIUS {
+                return (true, (-1.0, 1.0));
             }
         }
-        if (ball.position.0 + ball::BALL_RADIUS) > xg &&
-           ball.position.0 < (xd + ball::BALL_RADIUS) &&
-           ball.position.1 > yh && ball.position.1 < yb
+        if (ball.position.x + ball::BALL_RADIUS) > xg &&
+           ball.position.x < (xd + ball::BALL_RADIUS) &&
+           ball.position.y > yh && ball.position.y < yb
         {
-           return (true, 90.0); 
+           return (true, (-1.0, 1.0)); 
         }
-        if (ball.position.1 + ball::BALL_RADIUS) > yh &&
-           ball.position.1 < (yb + ball::BALL_RADIUS) &&
-           ball.position.0 > xg && ball.position.0 < xd
+        if (ball.position.y + ball::BALL_RADIUS) > yh &&
+           ball.position.y < (yb + ball::BALL_RADIUS) &&
+           ball.position.x > xg && ball.position.x < xd
         {
-           return (true, 90.0); 
+           return (true, (1.0, -1.0)); 
         }
-        return (false, 0.0);
+        return (false, (1.0, 1.0));
     }
 }
 
@@ -96,8 +106,7 @@ pub mod BrickFactory {
 
     pub fn simple_brick(x: Pixels, y: Pixels) -> Brick {
         Brick {
-            x: x,
-            y: y,
+            position: Point {x: x, y: y},
             breakable: true,
             hitpoints: 1,
             color: Color::RGBA(200, 0, 200, 200),
@@ -105,8 +114,7 @@ pub mod BrickFactory {
     } 
     pub fn hard_brick(x: Pixels, y: Pixels) -> Brick {
         Brick {
-            x: x,
-            y: y,
+            position: Point {x: x, y: y},
             breakable: true,
             hitpoints: 2,
             color: Color::RGBA(0, 200, 200, 200),
@@ -114,8 +122,7 @@ pub mod BrickFactory {
     }
     pub fn super_brick(x: Pixels, y: Pixels) -> Brick {
         Brick {
-            x: x,
-            y: y,
+            position: Point {x: x, y: y},
             breakable: false,
             hitpoints: 0,
             color: Color::RGBA(200, 200, 0, 200),

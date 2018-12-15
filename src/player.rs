@@ -1,8 +1,8 @@
 use ball;
 use traits;
 
-pub struct Player {
-    position: (u32, u32),
+pub struct Player {r
+    position: utils::Point,
 }
 
 // TODO :

@@ -6,14 +6,11 @@ pub mod brick;
 pub mod traits;
 pub mod utils;
 
-use std::f64::consts::PI;
-use std::time::Instant;
-
 use traits::*;
 
 use failure::{err_msg, Error};
-use sdl2::event::{Event, WindowEvent};
-use sdl2::keyboard::{KeyboardState, Keycode, Scancode};
+use sdl2::event::{Event};
+use sdl2::keyboard::{Keycode};
 use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
@@ -27,9 +24,15 @@ fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> 
     let video_subsystem = sdl_context.video().map_err(err_msg)?;
 
     let window = video_subsystem
-        .window("Arkanoid",
-                brick::BRICK_WIDTH*BRICK_COL + brick::BRICK_H_PAD*(BRICK_COL+1),
-                brick::BRICK_HEIGHT*BRICK_ROW + brick::BRICK_V_PAD*(BRICK_ROW+1) + 300)
+        .window(
+            "Arkanoid",
+            (brick::BRICK_WIDTH * (BRICK_COL as f32) +
+                brick::BRICK_H_PAD * ((BRICK_COL as f32) + 1.0))
+            as u32,
+            (brick::BRICK_HEIGHT * (BRICK_ROW as f32) +
+                brick::BRICK_V_PAD * ((BRICK_ROW as f32) + 1.0) + 300.0)
+            as u32,
+        )
         .position_centered()
         //.resizable()
         .allow_highdpi()
@@ -45,8 +48,11 @@ fn init() -> Result<(Sdl, Canvas<Window>, EventPump, Vec<brick::Brick>), Error> 
     let mut bricks: Vec<brick::Brick> = vec![];
     for x in 0..BRICK_COL {
         for y in 0..BRICK_ROW {
-//            bricks.push(brick::Brick {x: x, y: y});
-            bricks.push(brick::BrickFactory::simple_brick(x, y));
+            bricks.push(
+                brick::BrickFactory::simple_brick(
+                    x as utils::Pixels, y as utils::Pixels
+                )
+            );
         }
     }
     let bricks = bricks;
@@ -58,8 +64,8 @@ fn main() {
     let (_sdl_context, mut canvas, mut event_pump, mut bricks) = init().unwrap();
 
     let mut ball: ball::Ball = ball::Ball {
-        position: (100, 100),
-        speed: (1, 1),
+        position: utils::Point {x: 100.0, y: 100.0},
+        speed: utils::Point {x: 1.0, y: 1.0},
         color: Color::RGBA(120, 120, 200, 230)
     };
 
@@ -79,7 +85,7 @@ fn main() {
         for (i, brick) in bricks.iter().enumerate() {
             if brick.collides(&ball).0 {
 //                ball.bounce(brick);
-                println!("{}, {}", brick.x, brick.y);
+                println!("{}, {}", brick.position.x, brick.position.y);
                 remove = i as i64;
             }
         }

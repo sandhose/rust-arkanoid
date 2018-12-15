@@ -18,5 +18,5 @@ pub trait Updatable {
 }
 
 pub trait Collisionable {
-    fn collides(&self, &ball::Ball) -> (bool, f32);
+    fn collides(&self, &ball::Ball) -> (bool, (f32, f32));
 }
