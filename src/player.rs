@@ -18,20 +18,20 @@ pub struct Player {
 
 impl Collisionable for Player {
     fn get_x(&self) -> (utils::Pixels, utils::Pixels) {
-        return (
+        (
             self.position.x - (PLAYER_WIDTH * 0.5),
             self.position.x + (PLAYER_WIDTH * 0.5),
-        );
+        )
     }
     fn get_y(&self) -> (utils::Pixels, utils::Pixels) {
-        return (
+        (
             self.position.y - (PLAYER_THICKNESS * 0.5),
             self.position.y + (PLAYER_THICKNESS * 0.5),
-        );
+        )
     }
 
     fn collides(&self, ball: &ball::Ball) -> utils::CollisionResult {
-        return utils::collision::<Player>(&self, &ball);
+        utils::collision::<Player>(&self, &ball)
     }
 }
 

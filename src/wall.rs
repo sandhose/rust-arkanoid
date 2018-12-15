@@ -109,11 +109,7 @@ impl Collisionable for Wall {
     }
 
     fn collides(&self, ball: &ball::Ball) -> CollisionResult {
-        let vector = collision::<Wall>(&self, &ball)?;
-        Some(Point {
-            x: vector.x * self.bounce_direction.x,
-            y: vector.y * self.bounce_direction.y,
-        })
+        collision::<Wall>(&self, &ball).map(|v| v * self.bounce_direction)
     }
 }
 

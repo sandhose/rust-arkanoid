@@ -1,10 +1,36 @@
+use std::ops::{Add, Mul};
+
 use ball;
 use traits;
 
+#[derive(Clone, Copy)]
 pub struct Point {
     pub x: f32,
     pub y: f32,
 }
+
+impl Mul for Point {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        Self {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+        }
+    }
+}
+
+impl Add for Point {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self {
+        Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
 pub type Pixels = f32;
 
 pub type CollisionResult = Option<Point>;
@@ -19,10 +45,10 @@ pub fn distance(p1: &Point, p2: &Point) -> f32 {
 // bounces if it hits the angle of a brick
 // Uses the coordinates of both the angle and the ball
 pub fn angle_clsn_bnce_vect(angle: &Point, ball: &ball::Ball) -> Point {
-    return Point {
+    Point {
         x: ball.speed.y,
         y: ball.speed.x,
-    };
+    }
 }
 
 fn x_col(xg: Pixels, xd: Pixels, yh: Pixels, yb: Pixels, ball: &ball::Ball) -> CollisionResult {

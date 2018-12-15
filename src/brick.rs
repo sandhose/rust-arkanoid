@@ -43,7 +43,7 @@ impl Brick {
                 color: sdl2::pixels::Color::RGBA(0, 200, 200, 200),
             },
             BrickType::Super => Brick {
-                position: Point { x: x, y: y },
+                position,
                 breakable: false,
                 hitpoints: 0,
                 color: sdl2::pixels::Color::RGBA(200, 200, 0, 200),
@@ -80,21 +80,21 @@ where
 
 impl Collisionable for Brick {
     fn get_x(&self) -> (Pixels, Pixels) {
-        return (
+        (
             (self.position.x * BRICK_WIDTH
                 + (self.position.x + 1.0) * BRICK_H_PAD
                 + wall::WALL_THICKNESS),
             ((self.position.x + 1.0) * BRICK_WIDTH + (self.position.x + 1.0) * BRICK_H_PAD)
                 + wall::WALL_THICKNESS,
-        );
+        )
     }
     fn get_y(&self) -> (Pixels, Pixels) {
-        return (
+        (
             (self.position.y * BRICK_HEIGHT + (self.position.y + 1.0) * BRICK_V_PAD)
                 + wall::WALL_THICKNESS,
             ((self.position.y + 1.0) * BRICK_HEIGHT + (self.position.y + 1.0) * BRICK_V_PAD)
                 + wall::WALL_THICKNESS,
-        );
+        )
     }
 
     fn collides(&self, ball: &ball::Ball) -> CollisionResult {
