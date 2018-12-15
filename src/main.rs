@@ -96,17 +96,18 @@ fn main() {
         for (i, brick) in bricks.iter().enumerate() {
             let collision_result = brick.collides(&ball);
             if collision_result.collided {
-                ball.bounce(
-                    utils::Point {
-                        x: collision_result.collision_vector.x,
-                        y: collision_result.collision_vector.y,
-                    }
-                );
+                ball.bounce(collision_result.collision_vector);
                 remove = i as i64;
             }
         }
-        if remove > 0 && remove < (bricks.len() as i64) {
+        if remove >= 0 && remove < (bricks.len() as i64) {
             bricks.remove(remove as usize);
+        }
+        for wall in &walls {
+            let collision_result = wall.collides(&ball);
+            if collision_result.collided {
+                ball.bounce(collision_result.collision_vector);
+            }
         }
 
         canvas.set_draw_color(Color::RGB(0, 0, 0));
