@@ -1,4 +1,5 @@
 use ball;
+use utils;
 
 pub struct UpdateFrame {
     pub dt: f64,
@@ -18,5 +19,5 @@ pub trait Updatable {
 }
 
 pub trait Collisionable {
-    fn collides(&self, &ball::Ball) -> (bool, (f32, f32));
+    fn collides(&self, &ball::Ball) -> utils::CollisionResult;
 }

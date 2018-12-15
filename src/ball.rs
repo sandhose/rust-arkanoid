@@ -2,7 +2,6 @@ use utils;
 use traits::{Updatable, Renderable};
 
 use failure::{err_msg, Error};
-use sdl2::pixels::Color;
 use sdl2::render::{Canvas, RenderTarget};
 use sdl2::gfx::primitives::DrawRenderer;
 
@@ -11,7 +10,7 @@ pub const BALL_RADIUS: utils::Pixels = 20.0;
 pub struct Ball {
     pub position: utils::Point,
     pub speed: utils::Point,
-    pub color: Color,
+    pub color: sdl2::pixels::Color,
 }
 
 impl Ball {
@@ -22,7 +21,6 @@ impl Ball {
 }
 
 impl Updatable for Ball {
-    //fn update(&mut self, frame: &UpdateFrame) {
     fn update(&mut self) {
         self.position.x += self.speed.x;
         self.position.y += self.speed.y;

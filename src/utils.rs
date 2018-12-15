@@ -1,5 +1,9 @@
 pub struct Point {pub x: f32, pub y: f32}
 pub type Pixels = f32;
+pub struct CollisionResult {
+    pub collided: bool,
+    pub collision_vector: Point,
+}
 
 pub fn distance(p1: &Point, p2: &Point) -> f32{
     let l = (p1.x - p2.x).abs();

@@ -5,6 +5,7 @@ pub mod ball;
 pub mod brick;
 pub mod traits;
 pub mod utils;
+pub mod wall;
 
 use traits::*;
 
@@ -83,12 +84,12 @@ fn main() {
 
         let mut remove: i64 = -1;
         for (i, brick) in bricks.iter().enumerate() {
-            let collision_result: (bool, (f32, f32)) = brick.collides(&ball);
-            if collision_result.0 {
+            let collision_result = brick.collides(&ball);
+            if collision_result.collided {
                 ball.bounce(
                     utils::Point {
-                        x: (collision_result.1).0,
-                        y: (collision_result.1).1,
+                        x: collision_result.collision_vector.x,
+                        y: collision_result.collision_vector.y,
                     }
                 );
                 remove = i as i64;

@@ -1,14 +1,13 @@
 use ball;
-use traits;
-use utils::Point;
+use traits::{Collisionable, Renderable};
+use utils;
 
-type Pixels = usize;
-const WALL_THICKNESS: Pixels = 10;
+const WALL_THICKNESS: utils::Pixels = 10.0;
 
 pub struct Wall {
-    origin: Point,
-    limits: Point,
-    bounce_direction: (u8, u8),
+    origin: utils::Point,
+    limits: utils::Point,
+    bounce_direction: utils::Point,
 }
 
 impl Wall {
@@ -16,24 +15,35 @@ impl Wall {
     // p1 - p2
     // |    |
     // p3 - p4
-    pub fn get_boundaries(&self) -> (Point, Point, Point, Point) {
-        let p1 = (self.origin.0, self.origin.1);
-        let p2 = (self.origin.0, self.limits.1);
-        let p3 = (self.limits.0, self.origin.1);
-        let p4 = (self.limits.0, self.limits.1);
+    pub fn get_boundaries(&self) -> (utils::Point, utils::Point, utils::Point, utils::Point) {
+        let p1 = utils::Point {x: self.origin.x, y: self.origin.y};
+        let p2 = utils::Point {x: self.origin.x, y: self.limits.y};
+        let p3 = utils::Point {x: self.limits.x, y: self.origin.y};
+        let p4 = utils::Point {x: self.limits.x, y: self.limits.y};
         return (p1, p2, p3, p4);
     }
 }
 
 impl Collisionable for Wall {
-    fn collides(&self, ball: &ball:Ball) -> (bool, (f32, f32)) {
-        if ball.position.0 < self.limit.0 &&
-           ball.position.1 < self.limit.1
+    fn collides(&self, ball: &ball::Ball) -> utils::CollisionResult {
+        // TODO : Correct collision detection for walls
+        if ball.position.x < self.limits.x &&
+           ball.position.y < self.limits.y
         {
-            return (
-                true,
-                (1.0 * self.bounce_direction.0, 1.0 * self.bounce_direction.1)
-            )
+            return utils::CollisionResult {
+                collided: true,
+                collision_vector: utils::Point {
+                    x: 1.0 * self.bounce_direction.x,
+                    y: 1.0 * self.bounce_direction.y,
+                },
+            };
+        }
+        return utils::CollisionResult {
+            collided: false,
+            collision_vector: utils::Point {
+                x: 1.0,
+                y: 1.0,
+            }
         }
     }
 }
@@ -43,39 +53,51 @@ impl Collisionable for Wall {
 mod WallFactory {
     use super::*;
 
-    fn top_wall(width: Pixels) -> Wall {
+    fn top_wall(width: utils::Pixels) -> Wall {
         return Wall {
-            origin: (0, 0),
-            limits: (width, WALL_THICKNESS),
-            bounce_direction: (1, -1),
+            origin: utils::Point {x: 0.0, y: 0.0},
+            limits: utils::Point {x: width, y: WALL_THICKNESS},
+            bounce_direction: utils::Point {
+                x: 1.0,
+                y: -1.0
+            },
         };
     }
-    fn left_wall(height: Pixels) -> Wall {
+    fn left_wall(height: utils::Pixels) -> Wall {
         return Wall {
-            origin: (0, 0),
-            limits: (WALL_THICKNESS, height),
-            bounce_direction: (-1, 1),
+            origin: utils::Point {x: 0.0, y: 0.0},
+            limits: utils::Point {x: WALL_THICKNESS, y: height},
+            bounce_direction: utils::Point {
+                x: -1.0,
+                y: 1.0
+            },
         };
     }
-    fn right_wall(height: Pixels, width: Pixels) -> Wall {
+    fn right_wall(height: utils::Pixels, width: utils::Pixels) -> Wall {
         return Wall {
-            origin: (width - WALL_THICKNESS, 0),
-            limits: (width, height),
-            bounce_direction: (-1, 1),
+            origin: utils::Point {x: width - WALL_THICKNESS, y: 0.0},
+            limits: utils::Point {x: width, y: height},
+            bounce_direction: utils::Point {
+                x: -1.0,
+                y: 1.0
+            },
         };
     }
-    fn pit(height: Pixels, width: Pixels) -> Wall {
+    fn pit(height: utils::Pixels, width: utils::Pixels) -> Wall {
         return Wall {
-            origin: (0, height - WALL_THICKNESS),
-            limits: (height, width),
-            bounce_direction: (0, 0),
+            origin: utils::Point {x: 0.0, y: height - WALL_THICKNESS},
+            limits: utils::Point {x: height, y: width},
+            bounce_direction: utils::Point {
+                x: 0.0,
+                y: 0.0
+            },
         }
     }
-    pub fn make_walls(height: Pixels, width: Pixels)
+    pub fn make_walls(height: utils::Pixels, width: utils::Pixels)
         -> (Wall, Wall, Wall, Wall)
     {
         (
-            top_wall(),
+            top_wall(width),
             left_wall(height),
             right_wall(height, width),
             pit(height, width),

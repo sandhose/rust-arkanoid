@@ -1,7 +1,7 @@
 use ball;
 use traits;
 
-pub struct Player {r
+pub struct Player {
     position: utils::Point,
 }
 
