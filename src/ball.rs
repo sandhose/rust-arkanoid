@@ -15,8 +15,7 @@ pub struct Ball {
 
 impl Ball {
     pub fn bounce(&mut self, change_vector: utils::Point) {
-        self.speed.x *= change_vector.x;
-        self.speed.y *= change_vector.y;
+        self.speed = change_vector;
     }
 }
 
