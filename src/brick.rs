@@ -84,7 +84,10 @@ impl Collisionable for Brick {
         {
             return utils::CollisionResult {
                 collided: true,
-                collision_vector: utils::Point {x: -1.0, y: 1.0}
+                collision_vector: utils::Point {
+                    x: -1.0 * ball.speed.x,
+                    y: 1.0 * ball.speed.y,
+                },
             };
         }
         if (ball.position.y + ball::BALL_RADIUS) > yh &&
@@ -93,7 +96,10 @@ impl Collisionable for Brick {
         {
             return utils::CollisionResult {
                 collided: true,
-                collision_vector: utils::Point {x: 1.0, y: -1.0}
+                collision_vector: utils::Point {
+                    x: 1.0 * ball.speed.x,
+                    y: -1.0 * ball.speed.y,
+                },
             };
         }
         let corners = [
@@ -104,8 +110,7 @@ impl Collisionable for Brick {
         ];
         for corner in corners.iter() {
             if utils::distance(corner, &ball.position) < ball::BALL_RADIUS {
-                let bounce_vector = utils::angle_clsn_bnce_vect(
-                    corner, &ball.position); 
+                let bounce_vector = utils::angle_clsn_bnce_vect(corner, &ball); 
                 return utils::CollisionResult {
                     collided: true,
                     collision_vector: bounce_vector,
@@ -114,7 +119,10 @@ impl Collisionable for Brick {
         }
         return utils::CollisionResult {
             collided: false,
-            collision_vector: utils::Point {x: 1.0, y: 1.0}
+            collision_vector: utils::Point {
+                x: 1.0 * ball.speed.x,
+                y: 1.0 * ball.speed.y,
+            },
         };
     }
 }
