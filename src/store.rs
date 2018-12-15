@@ -1,23 +1,33 @@
-use std::thread;
 use std::clone::Clone;
-use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{channel, Sender};
-
+use std::sync::{Arc, Mutex};
+use std::thread;
 
 #[derive(Clone)]
-struct Store<T: Clone, U> where T: Send, U: Send {
+struct Store<T: Clone, U>
+where
+    T: Send,
+    U: Send,
+{
     state: T,
     reducer: fn(&mut T, U),
 }
 
 #[derive(Clone)]
-struct StartedStore<T: Clone, U> where T: Send, U: Send {
+struct StartedStore<T: Clone, U>
+where
+    T: Send,
+    U: Send,
+{
     state: Arc<Mutex<T>>,
-    channel: Sender<U>
+    channel: Sender<U>,
 }
 
-
-impl<T: 'static + Clone, U: 'static> Store<T, U> where T: Send, U: Send {
+impl<T: 'static + Clone, U: 'static> Store<T, U>
+where
+    T: Send,
+    U: Send,
+{
     pub fn new(reducer: fn(&mut T, U), initial_state: T) -> Self {
         Store {
             state: initial_state,
@@ -47,7 +57,11 @@ impl<T: 'static + Clone, U: 'static> Store<T, U> where T: Send, U: Send {
     }
 }
 
-impl<T: Clone, U> StartedStore<T, U> where T: Send, U: Send {
+impl<T: Clone, U> StartedStore<T, U>
+where
+    T: Send,
+    U: Send,
+{
     pub fn get(&self) -> T {
         self.state.lock().unwrap().clone()
     }
@@ -63,7 +77,10 @@ mod tests {
 
     #[test]
     fn simple_reducer() {
-        enum Action { Increment, Reset };
+        enum Action {
+            Increment,
+            Reset,
+        };
 
         #[derive(Clone)]
         struct State(u32);

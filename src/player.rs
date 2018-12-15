@@ -1,8 +1,8 @@
-use traits::{Collisionable, Renderable};
-use sdl2::render::{Canvas, RenderTarget};
-use sdl2::rect::Rect;
+use failure::err_msg;
 use sdl2::gfx::primitives::DrawRenderer;
-use failure::{err_msg};
+use sdl2::rect::Rect;
+use sdl2::render::{Canvas, RenderTarget};
+use traits::{Collisionable, Renderable};
 
 use ball;
 use utils;
@@ -39,28 +39,34 @@ impl<T> Renderable<T> for Player
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>)  -> Result<(), failure::Error> {
+    fn render(&self, canvas: &mut Canvas<T>) -> Result<(), failure::Error> {
         canvas.set_draw_color(self.color);
         let (xg, xd) = self.get_x();
         let (yh, yb) = self.get_y();
-        canvas.fill_rect(Rect::new(
-            xg as i32,
-            yh as i32,
-            (xd - xg) as u32,
-            (yb - yh) as u32,
-        )).map_err(err_msg)?;
-        canvas.filled_circle(
-            xg as i16,
-            (yh + (PLAYER_THICKNESS * 0.5)) as i16,
-            PLAYER_END_RADIUS as i16,
-            self.color,
-        ).map_err(err_msg)?;
-        canvas.filled_circle(
-            xd as i16,
-            (yb - (PLAYER_THICKNESS * 0.5)) as i16,
-            PLAYER_END_RADIUS as i16,
-            self.color,
-        ).map_err(err_msg)?;
+        canvas
+            .fill_rect(Rect::new(
+                xg as i32,
+                yh as i32,
+                (xd - xg) as u32,
+                (yb - yh) as u32,
+            ))
+            .map_err(err_msg)?;
+        canvas
+            .filled_circle(
+                xg as i16,
+                (yh + (PLAYER_THICKNESS * 0.5)) as i16,
+                PLAYER_END_RADIUS as i16,
+                self.color,
+            )
+            .map_err(err_msg)?;
+        canvas
+            .filled_circle(
+                xd as i16,
+                (yb - (PLAYER_THICKNESS * 0.5)) as i16,
+                PLAYER_END_RADIUS as i16,
+                self.color,
+            )
+            .map_err(err_msg)?;
         Ok(())
     }
 }

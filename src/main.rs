@@ -3,17 +3,18 @@ extern crate sdl2;
 
 pub mod ball;
 pub mod brick;
+// pub mod store; // Not used for now
+pub mod player;
 pub mod traits;
 pub mod utils;
 pub mod wall;
-pub mod player;
-pub mod store;
 
 use traits::*;
+use utils::{Pixels, Point};
 
 use failure::{err_msg, Error};
-use sdl2::event::{Event};
-use sdl2::keyboard::{Keycode};
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
@@ -22,30 +23,34 @@ use sdl2::{EventPump, Sdl};
 const BRICK_COL: u32 = 10;
 const BRICK_ROW: u32 = 6;
 
-fn init() -> Result<(
-    Sdl, Canvas<Window>, EventPump,
-    Vec<brick::Brick>, Vec<wall::Wall>, player::Player
-), Error>
-{
+fn init() -> Result<
+    (
+        Sdl,
+        Canvas<Window>,
+        EventPump,
+        Vec<brick::Brick>,
+        Vec<wall::Wall>,
+        player::Player,
+    ),
+    Error,
+> {
     let sdl_context = sdl2::init().map_err(err_msg)?;
     let video_subsystem = sdl_context.video().map_err(err_msg)?;
 
-    let game_width: utils::Pixels = brick::BRICK_WIDTH * (BRICK_COL as f32) +
-        brick::BRICK_H_PAD * ((BRICK_COL as f32) + 1.0) +
-        2.0 * wall::WALL_THICKNESS;
-    let game_height: utils::Pixels = brick::BRICK_HEIGHT * (BRICK_ROW as f32) +
-        brick::BRICK_V_PAD * ((BRICK_ROW as f32) + 1.0) + 300.0 +
-        2.0 * wall::WALL_THICKNESS;
+    let game_width: Pixels = brick::BRICK_WIDTH * (BRICK_COL as f32)
+        + brick::BRICK_H_PAD * ((BRICK_COL as f32) + 1.0)
+        + 2.0 * wall::WALL_THICKNESS;
+
+    let game_height: Pixels = brick::BRICK_HEIGHT * (BRICK_ROW as f32)
+        + brick::BRICK_V_PAD * ((BRICK_ROW as f32) + 1.0)
+        + 300.0
+        + 2.0 * wall::WALL_THICKNESS;
 
     let window = video_subsystem
-        .window(
-            "Arkanoid",
-            game_width as u32,
-            game_height as u32,
-        )
+        .window("Arkanoid", game_width as u32, game_height as u32)
         .position_centered()
         //.resizable()
-        .allow_highdpi()
+        //.allow_highdpi()
         .build()?;
 
     let mut canvas = window.into_canvas().accelerated().present_vsync().build()?;
@@ -58,15 +63,15 @@ fn init() -> Result<(
     let mut bricks: Vec<brick::Brick> = vec![];
     for x in 0..BRICK_COL {
         for y in 0..BRICK_ROW {
-            bricks.push(
-                brick::BrickFactory::simple_brick(
-                    x as utils::Pixels, y as utils::Pixels
-                )
-            );
+            bricks.push(brick::Brick::new(
+                brick::BrickType::Simple,
+                x as Pixels,
+                y as Pixels,
+            ));
         }
     }
     let bricks = bricks;
-    let walls = wall::WallFactory::make_walls(game_height, game_width);
+    let walls = wall::Wall::make_walls(game_height, game_width);
     let player = player::Player {
         position: utils::Point {
             x: game_width * 0.5,
@@ -79,13 +84,12 @@ fn init() -> Result<(
 }
 
 fn main() {
-    let (_sdl_context, mut canvas, mut event_pump, mut bricks, walls, player)
-        = init().unwrap();
+    let (_sdl_context, mut canvas, mut event_pump, mut bricks, walls, player) = init().unwrap();
 
     let mut ball: ball::Ball = ball::Ball {
-        position: utils::Point {x: 100.0, y: 100.0},
-        speed: utils::Point {x: 1.0, y: 1.0},
-        color: Color::RGBA(120, 120, 200, 230)
+        position: Point { x: 100.0, y: 100.0 },
+        speed: Point { x: 1.0, y: 1.0 },
+        color: Color::RGBA(120, 120, 200, 230),
     };
 
     'running: loop {
@@ -93,7 +97,8 @@ fn main() {
             match event {
                 Event::Quit { .. }
                 | Event::KeyDown {
-                    keycode: Some(Keycode::Escape), ..
+                    keycode: Some(Keycode::Escape),
+                    ..
                 } => break 'running,
 
                 _ => {}
@@ -102,9 +107,8 @@ fn main() {
 
         let mut remove: i64 = -1;
         for (i, brick) in bricks.iter().enumerate() {
-            let collision_result = brick.collides(&ball);
-            if collision_result.collided {
-                ball.bounce(collision_result.collision_vector);
+            if let Some(vector) = brick.collides(&ball) {
+                ball.bounce(vector);
                 remove = i as i64;
             }
         }
@@ -112,23 +116,22 @@ fn main() {
             bricks.remove(remove as usize);
         }
         for wall in &walls {
-            let collision_result = wall.collides(&ball);
-            if collision_result.collided {
-                ball.bounce(collision_result.collision_vector);
+            if let Some(vector) = wall.collides(&ball) {
+                ball.bounce(vector);
             }
         }
 
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
         for brick in &bricks {
-            let result = brick.render(&mut canvas);
+            brick.render(&mut canvas).unwrap();
         }
         for wall in &walls {
-            let result = wall.render(&mut canvas);
+            wall.render(&mut canvas).unwrap();
         }
         ball.update();
-        let result = ball.render(&mut canvas);
-        let result = player.render(&mut canvas);
+        player.render(&mut canvas).unwrap();
+        ball.render(&mut canvas).unwrap();
         canvas.present();
     }
 }
