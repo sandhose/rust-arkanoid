@@ -30,7 +30,7 @@ impl Collisionable for Player {
         )
     }
 
-    fn collides(&self, ball: &ball::Ball) -> utils::CollisionResult {
+    fn collides(&self, ball: &ball::Ball) -> Option<utils::CollisionResult> {
         utils::collision::<Player>(&self, &ball)
     }
 }

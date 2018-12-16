@@ -30,7 +30,9 @@ impl State {
             },
             ball: Ball {
                 position: Point { x: 100.0, y: 100.0 },
-                speed: Point { x: 1.0, y: 1.0 },
+                angle: std::f64::consts::PI / 4.0,
+                speed: 2.0,
+                acceleration: 0.0,
                 color: Color::RGBA(120, 120, 200, 230),
             },
         }
@@ -67,7 +69,7 @@ impl Updatable for State {
         let mut remove: i64 = -1;
         for (i, brick) in self.bricks.iter().enumerate() {
             if let Some(vector) = brick.collides(&self.ball) {
-                self.ball.bounce(vector);
+                self.ball.bounce(vector.angle);
                 remove = i as i64;
             }
         }
@@ -77,7 +79,7 @@ impl Updatable for State {
 
         for wall in &self.walls {
             if let Some(vector) = wall.collides(&self.ball) {
-                self.ball.bounce(vector);
+                self.ball.bounce(vector.angle);
             }
         }
     }

@@ -109,7 +109,7 @@ impl Collisionable for Brick {
         )
     }
 
-    fn collides(&self, ball: &ball::Ball) -> CollisionResult {
+    fn collides(&self, ball: &ball::Ball) -> Option<CollisionResult> {
         collision::<Brick>(self, ball)
     }
 }
