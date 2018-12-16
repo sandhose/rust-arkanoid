@@ -18,6 +18,7 @@ pub enum BrickType {
     Super,
 }
 
+#[derive(Clone)]
 pub struct Brick {
     pub position: Point,
     pub breakable: bool,
