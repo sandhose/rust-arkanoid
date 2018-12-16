@@ -12,6 +12,7 @@ pub mod brick;
 // pub mod store; // Not used for now
 pub mod level;
 pub mod player;
+pub mod shape;
 pub mod state;
 pub mod traits;
 pub mod utils;
@@ -63,6 +64,20 @@ fn main() {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'running,
+
+                Event::KeyDown {
+                    keycode: Some(Keycode::Up),
+                    ..
+                } => {
+                    state.ball.velocity.norm *= 1.5;
+                },
+
+                Event::KeyDown {
+                    keycode: Some(Keycode::Down),
+                    ..
+                } => {
+                    state.ball.velocity.norm /= 1.5;
+                },
 
                 _ => {}
             }

@@ -5,6 +5,7 @@ use traits::{Collisionable, Renderable, Updatable};
 
 use ball;
 use utils::{collision, CollisionResult, Pixels, Point};
+use shape;
 use wall;
 
 pub const BRICK_WIDTH: Pixels = 80.0;
@@ -24,7 +25,7 @@ pub enum BrickType {
 pub struct Brick {
     #[serde(rename = "type")]
     brick_type: BrickType,
-    pub position: Point,
+    pub position: Point, // TODO: use real coordinates
     pub breakable: bool,
     pub hitpoints: u8,
 }
@@ -61,6 +62,10 @@ impl Brick {
             BrickType::Hard => sdl2::pixels::Color::RGBA(0, 200, 200, 200),
             BrickType::Super => sdl2::pixels::Color::RGBA(200, 200, 0, 200),
         }
+    }
+
+    pub fn shape(&self) -> shape::Rect {
+        shape::Rect::from(self)
     }
 }
 

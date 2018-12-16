@@ -22,3 +22,13 @@ pub trait Collisionable {
     fn get_y(&self) -> (utils::Pixels, utils::Pixels);
     fn collides(&self, &ball::Ball) -> Option<utils::CollisionResult>;
 }
+
+pub trait Collide<T> {
+    fn collide(&self, &T) -> Option<utils::Rad>;
+}
+
+// impl<T, U: Collide<T>> Collide<U> for T {
+//     fn collide(&self, other: &U) -> Option<utils::Rad> {
+//         other.collide(self)
+//     }
+// }

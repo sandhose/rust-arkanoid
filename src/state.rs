@@ -2,7 +2,7 @@ use ball::Ball;
 use brick::Brick;
 use level::Level;
 use player::Player;
-use traits::{Collisionable, Renderable, Updatable};
+use traits::{Renderable, Updatable, Collide};
 use utils::{Point, Vector};
 use wall::Wall;
 
@@ -13,7 +13,7 @@ pub struct State {
     bricks: Vec<Brick>,
     walls: Vec<Wall>,
     player: Player,
-    ball: Ball,
+    pub ball: Ball,
 }
 
 impl State {
@@ -29,7 +29,7 @@ impl State {
                 color: Color::RGBA(255, 0, 0, 255),
             },
             ball: Ball {
-                position: Point { x: 100.0, y: 100.0 },
+                position: Point { x: 100.0, y: 300.0 },
                 velocity: Vector {
                     angle: std::f64::consts::PI / 4.0,
                     norm: 2.0,
@@ -70,9 +70,10 @@ impl Updatable for State {
 
         let mut remove: i64 = -1;
         for (i, brick) in self.bricks.iter().enumerate() {
-            if let Some(vector) = brick.collides(&self.ball) {
-                self.ball.bounce(vector.angle);
+            if let Some(tangent) = brick.shape().collide(&self.ball.shape()) {
+                self.ball.velocity = self.ball.velocity | tangent;
                 remove = i as i64;
+                break;
             }
         }
         if remove >= 0 && remove < (self.bricks.len() as i64) {
@@ -80,8 +81,8 @@ impl Updatable for State {
         }
 
         for wall in &self.walls {
-            if let Some(vector) = wall.collides(&self.ball) {
-                self.ball.bounce(vector.angle);
+            if let Some(tangent) = wall.shape.collide(&self.ball.shape()) {
+                self.ball.velocity = self.ball.velocity | tangent;
             }
         }
     }

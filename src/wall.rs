@@ -3,15 +3,18 @@ use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
 
 use ball;
+use shape::{InfiniteWall, WallOrientation};
 use traits::{Collisionable, Renderable};
 use utils::{collision, CollisionResult, Pixels, Point};
 
 pub const WALL_THICKNESS: Pixels = 10.0;
 
+// TODO: refactor this
 pub struct Wall {
     pub origin: Point,
     pub limits: Point,
     pub bounce: Pixels,
+    pub shape: InfiniteWall,
 }
 
 impl Wall {
@@ -48,6 +51,10 @@ impl Wall {
                 y: WALL_THICKNESS,
             },
             bounce: 1.0,
+            shape: InfiniteWall {
+                orientation: WallOrientation::Top,
+                position: WALL_THICKNESS,
+            },
         }
     }
 
@@ -59,6 +66,10 @@ impl Wall {
                 y: height,
             },
             bounce: 1.0,
+            shape: InfiniteWall {
+                orientation: WallOrientation::Left,
+                position: WALL_THICKNESS,
+            },
         }
     }
 
@@ -73,6 +84,10 @@ impl Wall {
                 y: height,
             },
             bounce: 1.0,
+            shape: InfiniteWall {
+                orientation: WallOrientation::Right,
+                position: width - WALL_THICKNESS,
+            },
         };
     }
 
@@ -87,6 +102,10 @@ impl Wall {
                 y: height,
             },
             bounce: 0.0,
+            shape: InfiniteWall {
+                orientation: WallOrientation::Bottom,
+                position: height - WALL_THICKNESS,
+            },
         }
     }
 

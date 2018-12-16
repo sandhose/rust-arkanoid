@@ -1,5 +1,5 @@
-use std::f64::consts::PI;
-use std::ops::{Add, Mul};
+pub use std::f64::consts::PI;
+use std::ops::{Add, BitOr, Mul, Sub};
 
 use ball;
 use traits;
@@ -8,19 +8,30 @@ pub type Rad = f64;
 pub type Deg = f64;
 pub type Pixels = f64;
 
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub struct Point {
     pub x: Pixels,
     pub y: Pixels,
 }
 
 impl Point {
-    fn norm(self) -> Pixels {
+    pub fn norm(self) -> Pixels {
         (self.x * self.x + self.y * self.y).sqrt()
     }
 
-    fn angle(self) -> Rad {
+    pub fn angle(self) -> Rad {
         self.y.atan2(self.x)
+    }
+}
+
+impl Sub for Point {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self {
+        Self {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
     }
 }
 
@@ -39,7 +50,7 @@ impl From<Vector> for Point {
     fn from(vector: Vector) -> Self {
         Self {
             x: vector.x(),
-            y: vector.y()
+            y: vector.y(),
         }
     }
 }
@@ -62,7 +73,10 @@ impl Vector {
 
 impl From<Point> for Vector {
     fn from(point: Point) -> Self {
-        Vector { angle: point.angle(), norm: point.norm() }
+        Vector {
+            angle: point.angle(),
+            norm: point.norm(),
+        }
     }
 }
 
@@ -78,7 +92,21 @@ impl Mul<Pixels> for Vector {
     type Output = Self;
 
     fn mul(self, rhs: Pixels) -> Self {
-        Vector { angle: self.angle, norm: self.norm * rhs }
+        Vector {
+            norm: self.norm * rhs,
+            ..self
+        }
+    }
+}
+
+impl BitOr<Rad> for Vector {
+    type Output = Self;
+
+    fn bitor(self, rhs: Rad) -> Self {
+        Vector {
+            angle: -self.angle + rhs + PI % (2. * PI),
+            ..self
+        }
     }
 }
 

@@ -1,3 +1,4 @@
+use shape::Circle;
 use traits::{Renderable, Updatable};
 use utils;
 
@@ -17,6 +18,10 @@ pub struct Ball {
 impl Ball {
     pub fn bounce(&mut self, new_angle: utils::Rad) {
         self.velocity.angle = new_angle;
+    }
+
+    pub fn shape(&self) -> Circle {
+        Circle::from(self)
     }
 }
 
