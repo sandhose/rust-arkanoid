@@ -49,13 +49,13 @@ where
 
 impl Updatable for Player {
     fn update(&mut self) {
-        self.position.x += self.velocity;
-
         self.velocity +=
             (self.acceleration * PLAYER_ACCELERATION) - (self.velocity * PLAYER_FRICTION);
 
         if self.velocity.abs() < 0.1 {
             self.velocity = 0.;
         }
+
+        self.position.x += self.velocity;
     }
 }

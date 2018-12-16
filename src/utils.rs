@@ -62,19 +62,19 @@ impl Into<sdl2::rect::Point> for Point {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vector {
     pub angle: Rad,
     pub norm: Pixels,
 }
 
 impl Vector {
-    fn x(&self) -> Pixels {
-        self.angle.sin() * self.norm
+    pub fn x(&self) -> Pixels {
+        self.angle.cos() * self.norm
     }
 
-    fn y(&self) -> Pixels {
-        self.angle.cos() * self.norm
+    pub fn y(&self) -> Pixels {
+        self.angle.sin() * self.norm
     }
 }
 
