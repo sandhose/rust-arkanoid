@@ -1,5 +1,6 @@
 use ball::{Ball, BALL_RADIUS};
 use brick::{Brick, BRICK_HEIGHT, BRICK_WIDTH};
+use player::{Player, PLAYER_THICKNESS, PLAYER_WIDTH};
 use traits::Collide;
 use utils::{Pixels, Point, Rad, Vector, PI};
 
@@ -16,6 +17,16 @@ impl From<&Brick> for Rect {
             center: brick.center,
             height: BRICK_HEIGHT,
             width: BRICK_WIDTH,
+        }
+    }
+}
+
+impl From<&Player> for Rect {
+    fn from(player: &Player) -> Self {
+        Rect {
+            center: player.position,
+            height: PLAYER_THICKNESS,
+            width: PLAYER_WIDTH,
         }
     }
 }
@@ -54,6 +65,24 @@ impl Collide<Circle> for InfiniteWall {
             WallOrientation::Left if other.center.x - other.radius < self.position => Some(PI / 2.),
             WallOrientation::Bottom if other.center.y + other.radius > self.position => Some(0.),
             WallOrientation::Right if other.center.x + other.radius > self.position => {
+                Some(PI / 2.)
+            }
+            _ => None,
+        }
+    }
+}
+
+impl Collide<Rect> for InfiniteWall {
+    fn collide(&self, other: &Rect) -> Option<Rad> {
+        match self.orientation {
+            WallOrientation::Top if other.center.y - other.height / 2. < self.position => Some(0.),
+            WallOrientation::Left if other.center.x - other.width / 2. < self.position => {
+                Some(PI / 2.)
+            }
+            WallOrientation::Bottom if other.center.y + other.height / 2. > self.position => {
+                Some(0.)
+            }
+            WallOrientation::Right if other.center.x + other.width / 2. > self.position => {
                 Some(PI / 2.)
             }
             _ => None,

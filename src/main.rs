@@ -12,22 +12,22 @@ pub mod brick;
 // pub mod store; // Not used for now
 pub mod level;
 pub mod player;
+pub mod resize;
 pub mod shape;
 pub mod state;
 pub mod traits;
 pub mod utils;
 pub mod wall;
-pub mod resize;
 
 use level::Level;
+use resize::{RenderContext, Size};
 use state::State;
 use traits::*;
 use utils::Pixels;
-use resize::{Size, RenderContext};
 
 use failure::{err_msg, Error};
 use sdl2::event::{Event, WindowEvent};
-use sdl2::keyboard::Keycode;
+use sdl2::keyboard::{KeyboardState, Keycode, Scancode};
 use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
@@ -60,6 +60,18 @@ fn main() {
     let mut context = resize::RenderContext::fit(Size::new(canvas.window().drawable_size()));
 
     'running: loop {
+        let player_input = {
+            let keyboard_state = KeyboardState::new(&event_pump);
+            let mut input = 0;
+            if keyboard_state.is_scancode_pressed(Scancode::Left) {
+                input -= 1;
+            }
+            if keyboard_state.is_scancode_pressed(Scancode::Right) {
+                input += 1;
+            }
+            input as f64
+        };
+
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit { .. }
@@ -96,6 +108,8 @@ fn main() {
                 _ => {}
             }
         }
+
+        state.player.acceleration = player_input;
 
         state.update();
         canvas.set_draw_color(Color::RGB(0, 0, 0));

@@ -3,9 +3,9 @@ use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
 use traits::{Renderable, Updatable};
 
+use resize::RenderContext;
 use shape;
 use utils::{Pixels, Point};
-use resize::RenderContext;
 
 pub const BRICK_WIDTH: Pixels = 80.0;
 pub const BRICK_HEIGHT: Pixels = 40.0;
@@ -76,7 +76,11 @@ impl<T> Renderable<T> for Brick
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), failure::Error> {
+    fn render(
+        &self,
+        canvas: &mut Canvas<T>,
+        context: &RenderContext,
+    ) -> Result<(), failure::Error> {
         canvas.set_draw_color(self.color());
         canvas
             .fill_rect(Rect::from_center(

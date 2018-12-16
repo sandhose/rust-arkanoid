@@ -2,10 +2,10 @@ use failure::err_msg;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
 
+use resize::RenderContext;
 use shape::{InfiniteWall, WallOrientation};
 use traits::Renderable;
 use utils::{Pixels, Point};
-use resize::RenderContext;
 
 pub const WALL_THICKNESS: Pixels = 10.0;
 
@@ -123,7 +123,11 @@ impl<T> Renderable<T> for Wall
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), failure::Error> {
+    fn render(
+        &self,
+        canvas: &mut Canvas<T>,
+        context: &RenderContext,
+    ) -> Result<(), failure::Error> {
         canvas.set_draw_color(sdl2::pixels::Color::RGBA(127, 127, 127, 255));
         canvas
             .fill_rect(Rect::new(

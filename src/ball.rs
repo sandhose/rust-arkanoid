@@ -1,7 +1,7 @@
+use resize::RenderContext;
 use shape::Circle;
 use traits::{Renderable, Updatable};
 use utils;
-use resize::RenderContext;
 
 use failure::{err_msg, Error};
 use sdl2::gfx::primitives::DrawRenderer;

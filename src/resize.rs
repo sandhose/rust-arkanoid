@@ -35,8 +35,8 @@ impl RenderContext {
     }
     pub fn translate_point(&self, position: Point) -> Point {
         Point {
-           x: self.scale * position.x + self.offset.width as f64,
-           y: self.scale * position.y + self.offset.height as f64,
+            x: self.scale * position.x + self.offset.width as f64,
+            y: self.scale * position.y + self.offset.height as f64,
         }
     }
 }
