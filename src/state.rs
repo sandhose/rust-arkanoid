@@ -3,7 +3,7 @@ use brick::Brick;
 use level::Level;
 use player::Player;
 use traits::{Collisionable, Renderable, Updatable};
-use utils::Point;
+use utils::{Point, Vector};
 use wall::Wall;
 
 use sdl2::pixels::Color;
@@ -30,8 +30,10 @@ impl State {
             },
             ball: Ball {
                 position: Point { x: 100.0, y: 100.0 },
-                angle: std::f64::consts::PI / 4.0,
-                speed: 2.0,
+                velocity: Vector {
+                    angle: std::f64::consts::PI / 4.0,
+                    norm: 2.0,
+                },
                 acceleration: 0.0,
                 color: Color::RGBA(120, 120, 200, 230),
             },

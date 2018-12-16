@@ -6,21 +6,21 @@ use traits;
 
 pub type Rad = f64;
 pub type Deg = f64;
+pub type Pixels = f64;
 
 #[derive(Clone, Copy, Deserialize, Serialize)]
 pub struct Point {
-    pub x: f32,
-    pub y: f32,
+    pub x: Pixels,
+    pub y: Pixels,
 }
 
-impl Mul for Point {
-    type Output = Self;
+impl Point {
+    fn norm(self) -> Pixels {
+        (self.x * self.x + self.y * self.y).sqrt()
+    }
 
-    fn mul(self, rhs: Self) -> Self {
-        Self {
-            x: self.x * rhs.x,
-            y: self.y * rhs.y,
-        }
+    fn angle(self) -> Rad {
+        self.y.atan2(self.x)
     }
 }
 
@@ -35,7 +35,52 @@ impl Add for Point {
     }
 }
 
-pub type Pixels = f32;
+impl From<Vector> for Point {
+    fn from(vector: Vector) -> Self {
+        Self {
+            x: vector.x(),
+            y: vector.y()
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct Vector {
+    pub angle: Rad,
+    pub norm: Pixels,
+}
+
+impl Vector {
+    fn x(&self) -> Pixels {
+        self.angle.sin() * self.norm
+    }
+
+    fn y(&self) -> Pixels {
+        self.angle.cos() * self.norm
+    }
+}
+
+impl From<Point> for Vector {
+    fn from(point: Point) -> Self {
+        Vector { angle: point.angle(), norm: point.norm() }
+    }
+}
+
+impl Add for Vector {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self {
+        Vector::from(Point::from(self) + Point::from(rhs))
+    }
+}
+
+impl Mul<Pixels> for Vector {
+    type Output = Self;
+
+    fn mul(self, rhs: Pixels) -> Self {
+        Vector { angle: self.angle, norm: self.norm * rhs }
+    }
+}
 
 pub struct CollisionResult {
     pub angle: Rad,
@@ -53,7 +98,7 @@ impl Mul for CollisionResult {
     }
 }
 
-pub fn distance(p1: &Point, p2: &Point) -> f32 {
+pub fn distance(p1: &Point, p2: &Point) -> Pixels {
     let l = (p1.x - p2.x).abs();
     let h = (p1.y - p2.y).abs();
     return (l * l + h * h).sqrt();
@@ -62,18 +107,18 @@ pub fn distance(p1: &Point, p2: &Point) -> f32 {
 // Computes the vector according to which the ball
 // bounces if it hits the angle of a brick
 // Uses the coordinates of both the angle and the ball
-pub fn angle_clsn_bnce_vect(angle: &Point, ball: &ball::Ball) -> Rad {
-    if ball.position.x < angle.x && ball.position.y < angle.y {
-        return (PI / 2.0) - (ball.angle + PI);
-    } else if ball.position.x < angle.x && ball.position.y >= angle.y {
-        return -(ball.angle + (PI / 2.0));
-    } else if ball.position.x >= angle.x && ball.position.y < angle.y {
-        return PI - (ball.angle - (3.0 * PI / 2.0));
+pub fn angle_clsn_bnce_vect(corner: &Point, ball: &ball::Ball) -> Rad {
+    if ball.position.x < corner.x && ball.position.y < corner.y {
+        return (PI / 2.0) - (ball.velocity.angle + PI);
+    } else if ball.position.x < corner.x && ball.position.y >= corner.y {
+        return -(ball.velocity.angle + (PI / 2.0));
+    } else if ball.position.x >= corner.x && ball.position.y < corner.y {
+        return PI - (ball.velocity.angle - (3.0 * PI / 2.0));
     } else
-    /*ball.position.x >= angle.x
-    && ball.position.y >= angle.y*/
+    /*ball.position.x >= corner.x
+    && ball.position.y >= corner.y*/
     {
-        return (3.0 * PI / 2.0) - (ball.angle - (2.0 * PI));
+        return (3.0 * PI / 2.0) - (ball.velocity.angle - (2.0 * PI));
     }
 }
 
@@ -90,8 +135,8 @@ fn x_col(
         && ball.position.y < yb
     {
         return Some(CollisionResult {
-            angle: PI - (ball.angle - 2.0 * PI),
-            speed: ball.speed,
+            angle: PI - (ball.velocity.angle - 2.0 * PI),
+            speed: ball.velocity.norm,
         });
     }
     None
@@ -110,8 +155,8 @@ fn y_col(
         && ball.position.x < xd
     {
         return Some(CollisionResult {
-            angle: -ball.angle,
-            speed: ball.speed,
+            angle: -ball.velocity.angle,
+            speed: ball.velocity.norm,
         });
     }
     None
@@ -135,7 +180,7 @@ fn angle_col(
             let bounce_angle = angle_clsn_bnce_vect(corner, &ball);
             return Some(CollisionResult {
                 angle: bounce_angle,
-                speed: ball.speed,
+                speed: ball.velocity.norm,
             });
         }
     }

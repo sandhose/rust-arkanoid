@@ -9,23 +9,21 @@ pub const BALL_RADIUS: utils::Pixels = 20.0;
 
 pub struct Ball {
     pub position: utils::Point,
-    pub angle: utils::Rad,
-    pub speed: utils::Pixels,
+    pub velocity: utils::Vector,
     pub acceleration: utils::Pixels,
     pub color: sdl2::pixels::Color,
 }
 
 impl Ball {
     pub fn bounce(&mut self, new_angle: utils::Rad) {
-        self.angle = new_angle;
+        self.velocity.angle = new_angle;
     }
 }
 
 impl Updatable for Ball {
     fn update(&mut self) {
-        self.position.x += self.speed * self.angle.cos() as f32;
-        self.position.y += self.speed * self.angle.sin() as f32;
-        self.speed += self.acceleration;
+        self.position = self.position + utils::Point::from(self.velocity);
+        self.velocity.norm += self.acceleration;
     }
 }
 

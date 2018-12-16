@@ -20,6 +20,7 @@ pub mod wall;
 use level::Level;
 use state::State;
 use traits::*;
+use utils::Pixels;
 
 use failure::{err_msg, Error};
 use sdl2::event::Event;
@@ -29,7 +30,7 @@ use sdl2::render::Canvas;
 use sdl2::video::Window;
 use sdl2::{EventPump, Sdl};
 
-fn init(width: f32, height: f32) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
+fn init(width: Pixels, height: Pixels) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
     let sdl_context = sdl2::init().map_err(err_msg)?;
     let video_subsystem = sdl_context.video().map_err(err_msg)?;
 

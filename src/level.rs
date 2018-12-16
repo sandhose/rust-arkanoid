@@ -36,7 +36,7 @@ impl Default for Level {
         let mut bricks = vec![];
         for i in 0..10 {
             for j in 0..6 {
-                bricks.push(Brick::new(BrickType::Simple, i as f32, j as f32));
+                bricks.push(Brick::new(BrickType::Simple, i as Pixels, j as Pixels));
             }
         }
 
