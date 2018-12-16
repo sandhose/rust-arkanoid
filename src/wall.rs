@@ -9,77 +9,66 @@ use utils::{Pixels, Point};
 
 pub const WALL_THICKNESS: Pixels = 10.0;
 
-// TODO: refactor this
+// DONE: refactored this
 pub struct Wall {
-    pub origin: Point,
-    pub limits: Point,
-    pub bounce: Pixels,
+    width: Pixels,
+    height: Pixels,
     pub shape: InfiniteWall,
 }
 
 impl Wall {
     fn top(width: Pixels) -> Self {
         Wall {
-            origin: Point { x: 0.0, y: 0.0 },
-            limits: Point {
-                x: width,
-                y: WALL_THICKNESS,
-            },
-            bounce: 1.0,
+            width: width,
+            height: WALL_THICKNESS,
             shape: InfiniteWall {
                 orientation: WallOrientation::Top,
-                position: WALL_THICKNESS,
+                center: Point::new(
+                    width / 2.,
+                    WALL_THICKNESS / 2.,
+                ),
             },
         }
     }
 
     fn left(height: Pixels) -> Self {
         Wall {
-            origin: Point { x: 0.0, y: 0.0 },
-            limits: Point {
-                x: WALL_THICKNESS,
-                y: height,
-            },
-            bounce: 1.0,
+            width: WALL_THICKNESS,
+            height: height,
             shape: InfiniteWall {
                 orientation: WallOrientation::Left,
-                position: WALL_THICKNESS,
+                center: Point::new(
+                    WALL_THICKNESS / 2.,
+                    height / 2.,
+                ),
             },
         }
     }
 
     fn right(height: Pixels, width: Pixels) -> Self {
         return Wall {
-            origin: Point {
-                x: width - WALL_THICKNESS,
-                y: 0.0,
-            },
-            limits: Point {
-                x: width,
-                y: height,
-            },
-            bounce: 1.0,
+            width: WALL_THICKNESS,
+            height: height,
             shape: InfiniteWall {
                 orientation: WallOrientation::Right,
-                position: width - WALL_THICKNESS,
+                center: Point::new(
+                    width - (WALL_THICKNESS / 2.),
+                    height / 2.,
+                ),
             },
         };
     }
 
     fn pit(height: Pixels, width: Pixels) -> Self {
         Wall {
-            origin: Point {
-                x: 0.0,
-                y: height - WALL_THICKNESS,
-            },
-            limits: Point {
-                x: width,
-                y: height,
-            },
-            bounce: 0.0,
+            width: width,
+            height: WALL_THICKNESS,
             shape: InfiniteWall {
                 orientation: WallOrientation::Bottom,
-                position: height - WALL_THICKNESS,
+                center: Point::new(
+                    width / 2.,
+                    height - (WALL_THICKNESS / 2.),
+                ),
             },
         }
     }
@@ -98,20 +87,13 @@ impl<T> Renderable<T> for Wall
 where
     T: RenderTarget,
 {
-    fn render(
-        &self,
-        canvas: &mut Canvas<T>,
-        context: &RenderContext,
-    ) -> Result<(), failure::Error> {
-        let t_origin = context.translate_point(self.origin);
-        let t_limits = context.translate_point(self.limits);
+    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), failure::Error> {
         canvas.set_draw_color(sdl2::pixels::Color::RGBA(127, 127, 127, 255));
         canvas
-            .fill_rect(Rect::new(
-                t_origin.x as i32,
-                t_origin.y as i32,
-                (t_limits.x - t_origin.x) as u32,
-                (t_limits.y - t_origin.y) as u32,
+            .fill_rect(Rect::from_center(
+                context.translate_point(self.shape.center),
+                context.scale(self.width),
+                context.scale(self.height),
             ))
             .map_err(err_msg)?;
         Ok(())

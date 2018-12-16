@@ -60,35 +60,35 @@ pub enum WallOrientation {
 
 pub struct InfiniteWall {
     pub orientation: WallOrientation,
-    pub position: Pixels,
+    pub center: Point,
 }
 
 impl Collide<Circle> for InfiniteWall {
     fn collide(&self, other: &Circle) -> Option<Collision> {
         match self.orientation {
-            WallOrientation::Top if other.center.y - other.radius < self.position => {
+            WallOrientation::Top if other.center.y - other.radius < self.center.y => {
                 println!("top");
                 Some((
                     DOWN,
-                    (-(other.center.y - other.radius) + self.position).abs(),
+                    (-(other.center.y - other.radius) + self.center.y).abs(),
                 ))
             }
-            WallOrientation::Left if other.center.x - other.radius < self.position => {
+            WallOrientation::Left if other.center.x - other.radius < self.center.x => {
                 println!("left");
                 Some((
                     RIGHT,
-                    (-(other.center.x - other.radius) + self.position).abs(),
+                    (-(other.center.x - other.radius) + self.center.x).abs(),
                 ))
             }
-            WallOrientation::Bottom if other.center.y + other.radius > self.position => {
+            WallOrientation::Bottom if other.center.y + other.radius > self.center.y => {
                 println!("bottom");
-                Some((UP, ((other.center.y + other.radius) - self.position).abs()))
+                Some((UP, ((other.center.y + other.radius) - self.center.y).abs()))
             }
-            WallOrientation::Right if other.center.x + other.radius > self.position => {
+            WallOrientation::Right if other.center.x + other.radius > self.center.x => {
                 println!("left");
                 Some((
                     LEFT,
-                    ((other.center.x + other.radius) - self.position).abs(),
+                    ((other.center.x + other.radius) - self.center.x).abs(),
                 ))
             }
             _ => None,
@@ -99,21 +99,21 @@ impl Collide<Circle> for InfiniteWall {
 impl Collide<Rect> for InfiniteWall {
     fn collide(&self, other: &Rect) -> Option<Collision> {
         match self.orientation {
-            WallOrientation::Top if other.center.y - other.height / 2. < self.position => {
+            WallOrientation::Top if other.center.y - other.height / 2. < self.center.y => {
                 println!("top");
-                Some((DOWN, -(other.center.y - other.height / 2.) + self.position))
+                Some((DOWN, -(other.center.y - other.height / 2.) + self.center.y))
             }
-            WallOrientation::Left if other.center.x - other.width / 2. < self.position => {
+            WallOrientation::Left if other.center.x - other.width / 2. < self.center.x => {
                 println!("left");
-                Some((RIGHT, -(other.center.x - other.width / 2.) + self.position))
+                Some((RIGHT, -(other.center.x - other.width / 2.) + self.center.x))
             }
-            WallOrientation::Bottom if other.center.y + other.height / 2. > self.position => {
+            WallOrientation::Bottom if other.center.y + other.height / 2. > self.center.y => {
                 println!("bottom");
-                Some((UP, (other.center.y + other.height / 2.) - self.position))
+                Some((UP, (other.center.y + other.height / 2.) - self.center.y))
             }
-            WallOrientation::Right if other.center.x + other.width / 2. > self.position => {
+            WallOrientation::Right if other.center.x + other.width / 2. > self.center.x => {
                 println!("right");
-                Some((LEFT, (other.center.x + other.width / 2.) - self.position))
+                Some((LEFT, (other.center.x + other.width / 2.) - self.center.x))
             }
             _ => None,
         }
