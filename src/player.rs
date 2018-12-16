@@ -38,7 +38,7 @@ where
         canvas.set_draw_color(self.color);
         canvas
             .fill_rect(SDLRect::from_center(
-                self.position,
+                context.translate_point(self.position),
                 PLAYER_WIDTH as u32,
                 PLAYER_THICKNESS as u32,
             ))

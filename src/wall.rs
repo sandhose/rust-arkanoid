@@ -18,31 +18,6 @@ pub struct Wall {
 }
 
 impl Wall {
-    //    // Admettant un rectangle :
-    //    // p1 - p2
-    //    // |    |
-    //    // p3 - p4
-    //    pub fn get_boundaries(&self) -> (Point, Point, Point, Point) {
-    //        let p1 = Point {
-    //            x: self.origin.x,
-    //            y: self.origin.y,
-    //        };
-    //        let p2 = Point {
-    //            x: self.origin.x,
-    //            y: self.limits.y,
-    //        };
-    //        let p3 = Point {
-    //            x: self.limits.x,
-    //            y: self.origin.y,
-    //        };
-    //        let p4 = Point {
-    //            x: self.limits.x,
-    //            y: self.limits.y,
-    //        };
-    //
-    //        (p1, p2, p3, p4)
-    //    }
-
     fn top(width: Pixels) -> Self {
         Wall {
             origin: Point { x: 0.0, y: 0.0 },
@@ -128,13 +103,15 @@ where
         canvas: &mut Canvas<T>,
         context: &RenderContext,
     ) -> Result<(), failure::Error> {
+        let t_origin = context.translate_point(self.origin);
+        let t_limits = context.translate_point(self.limits);
         canvas.set_draw_color(sdl2::pixels::Color::RGBA(127, 127, 127, 255));
         canvas
             .fill_rect(Rect::new(
-                self.origin.x as i32,
-                self.origin.y as i32,
-                (self.limits.x - self.origin.x) as u32,
-                (self.limits.y - self.origin.y) as u32,
+                t_origin.x as i32,
+                t_origin.y as i32,
+                (t_limits.x - t_origin.x) as u32,
+                (t_limits.y - t_origin.y) as u32,
             ))
             .map_err(err_msg)?;
         Ok(())

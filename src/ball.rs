@@ -38,12 +38,13 @@ where
     T: RenderTarget,
 {
     fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), Error> {
+        let center = context.translate_point(self.position);
         canvas.set_draw_color(self.color);
         canvas
             .filled_circle(
-                self.position.x as i16,
-                self.position.y as i16,
-                BALL_RADIUS as i16,
+                center.x as i16,
+                center.y as i16,
+                context.scale(BALL_RADIUS) as i16,
                 self.color,
             )
             .map_err(err_msg)?;

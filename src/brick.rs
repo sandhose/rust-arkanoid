@@ -84,9 +84,9 @@ where
         canvas.set_draw_color(self.color());
         canvas
             .fill_rect(Rect::from_center(
-                self.center,
-                BRICK_WIDTH as u32,
-                BRICK_HEIGHT as u32,
+                context.translate_point(self.center),
+                context.scale(BRICK_WIDTH) as u32,
+                context.scale(BRICK_HEIGHT) as u32,
             ))
             .map_err(err_msg)?;
         Ok(())

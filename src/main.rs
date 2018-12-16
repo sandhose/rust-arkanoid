@@ -40,7 +40,7 @@ fn init(width: Pixels, height: Pixels) -> Result<(Sdl, Canvas<Window>, EventPump
     let window = video_subsystem
         .window("Arkanoid", height as u32, width as u32)
         .position_centered()
-        //.resizable()
+        .resizable()
         //.allow_highdpi()
         .build()?;
 
@@ -57,7 +57,10 @@ fn main() {
     let level = Level::load_file("levels/default.json").expect("Could not load level file");
     let (_sdl_context, mut canvas, mut event_pump) = init(level.height(), level.width()).unwrap();
     let mut state = State::new(level);
-    let mut context = resize::RenderContext::fit(Size::new(canvas.window().drawable_size()));
+    let mut context = RenderContext::new(
+        Size::new((800, 600)),
+        Size::new(canvas.window().drawable_size()),
+    );
 
     'running: loop {
         let player_input = {
@@ -102,7 +105,7 @@ fn main() {
                     win_event: WindowEvent::Resized(_, _),
                     ..
                 } => {
-                    context = RenderContext::fit(Size::new(canvas.window().drawable_size()));
+                    context.fit(Size::new(canvas.window().drawable_size()));
                 }
 
                 _ => {}
