@@ -2,6 +2,7 @@ use failure::err_msg;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
 use traits::Renderable;
+use resize::RenderContext;
 
 use utils;
 
@@ -18,7 +19,7 @@ impl<T> Renderable<T> for Player
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>) -> Result<(), failure::Error> {
+    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), failure::Error> {
         canvas.set_draw_color(self.color);
         canvas
             .fill_rect(Rect::from_center(

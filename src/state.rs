@@ -5,6 +5,7 @@ use player::Player;
 use traits::{Collide, Renderable, Updatable};
 use utils::{Point, Vector};
 use wall::Wall;
+use resize::RenderContext;
 
 use sdl2::pixels::Color;
 use sdl2::render::{Canvas, RenderTarget};
@@ -51,15 +52,15 @@ impl<T> Renderable<T> for State
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>) -> Result<(), failure::Error> {
+    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), failure::Error> {
         for brick in &self.bricks {
-            brick.render(canvas)?;
+            brick.render(canvas, context)?;
         }
         for wall in &self.walls {
-            wall.render(canvas)?;
+            wall.render(canvas, context)?;
         }
-        self.player.render(canvas)?;
-        self.ball.render(canvas)?;
+        self.player.render(canvas, context)?;
+        self.ball.render(canvas, context)?;
         Ok(())
     }
 }

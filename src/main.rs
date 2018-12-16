@@ -17,14 +17,16 @@ pub mod state;
 pub mod traits;
 pub mod utils;
 pub mod wall;
+pub mod resize;
 
 use level::Level;
 use state::State;
 use traits::*;
 use utils::Pixels;
+use resize::{Size, RenderContext};
 
 use failure::{err_msg, Error};
-use sdl2::event::Event;
+use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::render::Canvas;
@@ -55,6 +57,7 @@ fn main() {
     let level = Level::load_file("levels/default.json").expect("Could not load level file");
     let (_sdl_context, mut canvas, mut event_pump) = init(level.height(), level.width()).unwrap();
     let mut state = State::new(level);
+    let mut context = resize::RenderContext::fit(Size::new(canvas.window().drawable_size()));
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -79,6 +82,17 @@ fn main() {
                     state.ball.velocity.norm /= 1.5;
                 }
 
+                Event::Window {
+                    win_event: WindowEvent::SizeChanged(_, _),
+                    ..
+                }
+                | Event::Window {
+                    win_event: WindowEvent::Resized(_, _),
+                    ..
+                } => {
+                    context = RenderContext::fit(Size::new(canvas.window().drawable_size()));
+                }
+
                 _ => {}
             }
         }
@@ -86,7 +100,7 @@ fn main() {
         state.update();
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
-        state.render(&mut canvas).unwrap();
+        state.render(&mut canvas, &context).unwrap();
         canvas.present();
     }
 }

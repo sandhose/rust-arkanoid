@@ -1,6 +1,7 @@
 use shape::Circle;
 use traits::{Renderable, Updatable};
 use utils;
+use resize::RenderContext;
 
 use failure::{err_msg, Error};
 use sdl2::gfx::primitives::DrawRenderer;
@@ -36,7 +37,7 @@ impl<T> Renderable<T> for Ball
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>) -> Result<(), Error> {
+    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), Error> {
         canvas.set_draw_color(self.color);
         canvas
             .filled_circle(

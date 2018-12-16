@@ -1,4 +1,5 @@
 use utils;
+use resize;
 
 pub struct UpdateFrame {
     pub dt: f64,
@@ -9,7 +10,7 @@ pub trait Renderable<T>
 where
     T: sdl2::render::RenderTarget,
 {
-    fn render(&self, &mut sdl2::render::Canvas<T>) -> Result<(), failure::Error>;
+    fn render(&self, &mut sdl2::render::Canvas<T>, &resize::RenderContext) -> Result<(), failure::Error>;
 }
 
 pub trait Updatable {
