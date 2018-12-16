@@ -1,12 +1,10 @@
 use failure::err_msg;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
-use traits::{Collisionable, Renderable, Updatable};
+use traits::{Renderable, Updatable};
 
-use ball;
-use utils::{collision, CollisionResult, Pixels, Point};
 use shape;
-use wall;
+use utils::{Pixels, Point};
 
 pub const BRICK_WIDTH: Pixels = 80.0;
 pub const BRICK_HEIGHT: Pixels = 40.0;
@@ -25,31 +23,29 @@ pub enum BrickType {
 pub struct Brick {
     #[serde(rename = "type")]
     brick_type: BrickType,
-    pub position: Point, // TODO: use real coordinates
+    pub center: Point,
     pub breakable: bool,
     pub hitpoints: u8,
 }
 
 impl Brick {
-    pub fn new(brick_type: BrickType, x: Pixels, y: Pixels) -> Brick {
-        let position = Point { x, y };
-
+    pub fn new(brick_type: BrickType, center: Point) -> Brick {
         match brick_type {
             BrickType::Simple => Brick {
                 brick_type,
-                position,
+                center,
                 breakable: true,
                 hitpoints: 1,
             },
             BrickType::Hard => Brick {
                 brick_type,
-                position,
+                center,
                 breakable: true,
                 hitpoints: 2,
             },
             BrickType::Super => Brick {
                 brick_type,
-                position,
+                center,
                 breakable: false,
                 hitpoints: 0,
             },
@@ -81,40 +77,13 @@ where
 {
     fn render(&self, canvas: &mut Canvas<T>) -> Result<(), failure::Error> {
         canvas.set_draw_color(self.color());
-        let (xg, xd) = self.get_x();
-        let (yh, yb) = self.get_y();
         canvas
-            .fill_rect(Rect::new(
-                xg as i32,
-                yh as i32,
-                (xd - xg) as u32,
-                (yb - yh) as u32,
+            .fill_rect(Rect::from_center(
+                self.center,
+                BRICK_WIDTH as u32,
+                BRICK_HEIGHT as u32,
             ))
             .map_err(err_msg)?;
         Ok(())
-    }
-}
-
-impl Collisionable for Brick {
-    fn get_x(&self) -> (Pixels, Pixels) {
-        (
-            (self.position.x * BRICK_WIDTH
-                + (self.position.x + 1.0) * BRICK_H_PAD
-                + wall::WALL_THICKNESS),
-            ((self.position.x + 1.0) * BRICK_WIDTH + (self.position.x + 1.0) * BRICK_H_PAD)
-                + wall::WALL_THICKNESS,
-        )
-    }
-    fn get_y(&self) -> (Pixels, Pixels) {
-        (
-            (self.position.y * BRICK_HEIGHT + (self.position.y + 1.0) * BRICK_V_PAD)
-                + wall::WALL_THICKNESS,
-            ((self.position.y + 1.0) * BRICK_HEIGHT + (self.position.y + 1.0) * BRICK_V_PAD)
-                + wall::WALL_THICKNESS,
-        )
-    }
-
-    fn collides(&self, ball: &ball::Ball) -> Option<CollisionResult> {
-        collision::<Brick>(self, ball)
     }
 }

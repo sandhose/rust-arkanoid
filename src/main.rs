@@ -70,14 +70,14 @@ fn main() {
                     ..
                 } => {
                     state.ball.velocity.norm *= 1.5;
-                },
+                }
 
                 Event::KeyDown {
                     keycode: Some(Keycode::Down),
                     ..
                 } => {
                     state.ball.velocity.norm /= 1.5;
-                },
+                }
 
                 _ => {}
             }

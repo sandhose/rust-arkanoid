@@ -1,6 +1,6 @@
-use traits::{Collide, Collisionable};
-use brick::Brick;
 use ball::{Ball, BALL_RADIUS};
+use brick::{Brick, BRICK_HEIGHT, BRICK_WIDTH};
+use traits::Collide;
 use utils::{Pixels, Point, Rad, Vector, PI};
 
 #[derive(Debug)]
@@ -12,12 +12,10 @@ pub struct Rect {
 
 impl From<&Brick> for Rect {
     fn from(brick: &Brick) -> Self {
-        let (xg, xd) = brick.get_x();
-        let (yh, yb) = brick.get_y();
         Rect {
-            center: Point { x: (xg + xd) / 2., y: (yh + yb) / 2. },
-            height: yb - yh,
-            width: xd - xg,
+            center: brick.center,
+            height: BRICK_HEIGHT,
+            width: BRICK_WIDTH,
         }
     }
 }
@@ -53,9 +51,11 @@ impl Collide<Circle> for InfiniteWall {
     fn collide(&self, other: &Circle) -> Option<Rad> {
         match self.orientation {
             WallOrientation::Top if other.center.y - other.radius < self.position => Some(0.),
-            WallOrientation::Left if other.center.x - other.radius < self.position => Some(PI),
+            WallOrientation::Left if other.center.x - other.radius < self.position => Some(PI / 2.),
             WallOrientation::Bottom if other.center.y + other.radius > self.position => Some(0.),
-            WallOrientation::Right if other.center.x + other.radius > self.position => Some(PI),
+            WallOrientation::Right if other.center.x + other.radius > self.position => {
+                Some(PI / 2.)
+            }
             _ => None,
         }
     }
@@ -66,7 +66,7 @@ impl Collide<Circle> for Circle {
         let distance = Vector::from(self.center - other.center);
 
         if distance.norm < self.radius + other.radius {
-            Some(distance.angle + PI)
+            Some(distance.angle)
         } else {
             None
         }
@@ -78,7 +78,7 @@ impl Collide<Point> for Circle {
         let distance = Vector::from(self.center - *other);
 
         if distance.norm < self.radius {
-            Some(distance.angle + PI)
+            Some(distance.angle)
         } else {
             None
         }
@@ -97,11 +97,9 @@ impl Collide<Point> for Rect {
             let l = [d_top, d_bottom, d_right, d_left];
             let max = l.iter().fold(100., |a, &b| f64::min(a, b));
             if d_top == max || d_bottom == max {
-                println!("horizontal");
                 Some(0.)
             } else {
-                println!("vertical");
-                Some(PI)
+                Some(PI / 2.)
             }
         } else {
             None
@@ -124,25 +122,23 @@ impl Collide<Circle> for Rect {
         }
 
         let rect = Rect {
-            width: self.width - other.radius * 2.,
+            width: self.width,
             height: self.height + other.radius * 2.,
             center: self.center,
         };
 
         if let Some(_) = rect.collide(&other.center) {
-            println!("first");
             return Some(0.);
         }
 
         let rect = Rect {
             width: self.width + other.radius * 2.,
-            height: self.height - other.radius * 2.,
+            height: self.height,
             center: self.center,
         };
 
         if let Some(_) = rect.collide(&other.center) {
-            println!("second");
-            return Some(PI);
+            return Some(PI / 2.);
         }
 
         let corners = [
@@ -182,7 +178,6 @@ impl Collide<Circle> for Rect {
 
         for corner in &corners {
             if let Some(res) = corner.collide(&other.center) {
-                println!("corner");
                 return Some(res);
             }
         }

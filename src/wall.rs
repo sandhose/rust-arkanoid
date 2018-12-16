@@ -2,10 +2,9 @@ use failure::err_msg;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
 
-use ball;
 use shape::{InfiniteWall, WallOrientation};
-use traits::{Collisionable, Renderable};
-use utils::{collision, CollisionResult, Pixels, Point};
+use traits::Renderable;
+use utils::{Pixels, Point};
 
 pub const WALL_THICKNESS: Pixels = 10.0;
 
@@ -116,24 +115,6 @@ impl Wall {
             Wall::right(h, w),
             Wall::pit(h, w),
         ];
-    }
-}
-
-impl Collisionable for Wall {
-    fn get_x(&self) -> (Pixels, Pixels) {
-        (self.origin.x, self.limits.x)
-    }
-    fn get_y(&self) -> (Pixels, Pixels) {
-        (self.origin.y, self.limits.y)
-    }
-
-    fn collides(&self, ball: &ball::Ball) -> Option<CollisionResult> {
-        collision::<Wall>(&self, &ball).map(|c| {
-            c * CollisionResult {
-                angle: 1.0,
-                speed: self.bounce,
-            }
-        })
     }
 }
 

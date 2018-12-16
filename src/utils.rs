@@ -1,9 +1,6 @@
 pub use std::f64::consts::PI;
 use std::ops::{Add, BitOr, Mul, Sub};
 
-use ball;
-use traits;
-
 pub type Rad = f64;
 pub type Deg = f64;
 pub type Pixels = f64;
@@ -15,6 +12,10 @@ pub struct Point {
 }
 
 impl Point {
+    pub fn new(x: Pixels, y: Pixels) -> Self {
+        Point { x, y }
+    }
+
     pub fn norm(self) -> Pixels {
         (self.x * self.x + self.y * self.y).sqrt()
     }
@@ -52,6 +53,12 @@ impl From<Vector> for Point {
             x: vector.x(),
             y: vector.y(),
         }
+    }
+}
+
+impl Into<sdl2::rect::Point> for Point {
+    fn into(self) -> sdl2::rect::Point {
+        sdl2::rect::Point::new(self.x as i32, self.y as i32)
     }
 }
 
@@ -104,123 +111,10 @@ impl BitOr<Rad> for Vector {
 
     fn bitor(self, rhs: Rad) -> Self {
         Vector {
-            angle: -self.angle + rhs + PI % (2. * PI),
+            angle: -self.angle + 2. * rhs + PI % (2. * PI),
             ..self
         }
     }
-}
-
-pub struct CollisionResult {
-    pub angle: Rad,
-    pub speed: Pixels,
-}
-
-impl Mul for CollisionResult {
-    type Output = Self;
-
-    fn mul(self, rhs: Self) -> Self {
-        Self {
-            angle: self.angle * rhs.angle,
-            speed: self.speed * rhs.speed,
-        }
-    }
-}
-
-pub fn distance(p1: &Point, p2: &Point) -> Pixels {
-    let l = (p1.x - p2.x).abs();
-    let h = (p1.y - p2.y).abs();
-    return (l * l + h * h).sqrt();
-}
-
-// Computes the vector according to which the ball
-// bounces if it hits the angle of a brick
-// Uses the coordinates of both the angle and the ball
-pub fn angle_clsn_bnce_vect(corner: &Point, ball: &ball::Ball) -> Rad {
-    if ball.position.x < corner.x && ball.position.y < corner.y {
-        return (PI / 2.0) - (ball.velocity.angle + PI);
-    } else if ball.position.x < corner.x && ball.position.y >= corner.y {
-        return -(ball.velocity.angle + (PI / 2.0));
-    } else if ball.position.x >= corner.x && ball.position.y < corner.y {
-        return PI - (ball.velocity.angle - (3.0 * PI / 2.0));
-    } else
-    /*ball.position.x >= corner.x
-    && ball.position.y >= corner.y*/
-    {
-        return (3.0 * PI / 2.0) - (ball.velocity.angle - (2.0 * PI));
-    }
-}
-
-fn x_col(
-    xg: Pixels,
-    xd: Pixels,
-    yh: Pixels,
-    yb: Pixels,
-    ball: &ball::Ball,
-) -> Option<CollisionResult> {
-    if (ball.position.x + ball::BALL_RADIUS) > xg
-        && ball.position.x < (xd + ball::BALL_RADIUS)
-        && ball.position.y > yh
-        && ball.position.y < yb
-    {
-        return Some(CollisionResult {
-            angle: PI - (ball.velocity.angle - 2.0 * PI),
-            speed: ball.velocity.norm,
-        });
-    }
-    None
-}
-
-fn y_col(
-    xg: Pixels,
-    xd: Pixels,
-    yh: Pixels,
-    yb: Pixels,
-    ball: &ball::Ball,
-) -> Option<CollisionResult> {
-    if (ball.position.y + ball::BALL_RADIUS) > yh
-        && ball.position.y < (yb + ball::BALL_RADIUS)
-        && ball.position.x > xg
-        && ball.position.x < xd
-    {
-        return Some(CollisionResult {
-            angle: -ball.velocity.angle,
-            speed: ball.velocity.norm,
-        });
-    }
-    None
-}
-
-fn angle_col(
-    xg: Pixels,
-    xd: Pixels,
-    yh: Pixels,
-    yb: Pixels,
-    ball: &ball::Ball,
-) -> Option<CollisionResult> {
-    let corners = [
-        Point { x: xg, y: yh },
-        Point { x: xg, y: yb },
-        Point { x: xd, y: yh },
-        Point { x: xd, y: yb },
-    ];
-    for corner in corners.iter() {
-        if distance(corner, &ball.position) < ball::BALL_RADIUS {
-            let bounce_angle = angle_clsn_bnce_vect(corner, &ball);
-            return Some(CollisionResult {
-                angle: bounce_angle,
-                speed: ball.velocity.norm,
-            });
-        }
-    }
-    None
-}
-
-pub fn collision<T: traits::Collisionable>(obj: &T, ball: &ball::Ball) -> Option<CollisionResult> {
-    let (xg, xd) = obj.get_x();
-    let (yh, yb) = obj.get_y();
-    x_col(xg, xd, yh, yb, &ball)
-        .or_else(|| y_col(xg, xd, yh, yb, &ball))
-        .or_else(|| angle_col(xg, xd, yh, yb, &ball))
 }
 
 #[cfg(test)]
@@ -228,9 +122,28 @@ mod utils_test {
     use super::*;
 
     #[test]
-    fn test_distance() {
-        let p1 = (332, 434);
-        let p2 = (143, 302);
-        assert_eq!(distance(p1, p2), 230);
+    fn test_point_norm() {
+        let p1 = Point::new(332., 434.);
+        let p2 = Point::new(143., 302.);
+        assert_eq!((p2 - p1).norm() as u32, 230);
+    }
+
+    #[test]
+    fn test_point_angle() {
+        assert_eq!(Point::new(1., 0.).angle(), 0.);
+        assert_eq!(Point::new(0., 1.).angle(), PI / 2.);
+        assert_eq!(Point::new(-1., 0.).angle(), PI);
+        assert_eq!(Point::new(0., -1.).angle(), -PI / 2.);
+    }
+
+    #[test]
+    fn test_collision() {
+        let v = Vector {
+            norm: 1.0,
+            angle: PI / 4.,
+        };
+        let v = v | (PI / 2.);
+        assert_eq!(v.norm, 1.0);
+        assert_eq!(v.angle, 7. * PI / 4.);
     }
 }

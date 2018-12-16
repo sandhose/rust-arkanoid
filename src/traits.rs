@@ -1,4 +1,3 @@
-use ball;
 use utils;
 
 pub struct UpdateFrame {
@@ -15,12 +14,6 @@ where
 
 pub trait Updatable {
     fn update(&mut self);
-}
-
-pub trait Collisionable {
-    fn get_x(&self) -> (utils::Pixels, utils::Pixels);
-    fn get_y(&self) -> (utils::Pixels, utils::Pixels);
-    fn collides(&self, &ball::Ball) -> Option<utils::CollisionResult>;
 }
 
 pub trait Collide<T> {

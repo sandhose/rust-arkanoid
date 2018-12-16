@@ -2,7 +2,7 @@ use ball::Ball;
 use brick::Brick;
 use level::Level;
 use player::Player;
-use traits::{Renderable, Updatable, Collide};
+use traits::{Collide, Renderable, Updatable};
 use utils::{Point, Vector};
 use wall::Wall;
 

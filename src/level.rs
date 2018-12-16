@@ -1,9 +1,10 @@
 use std::fs::File;
 use std::io::Read;
 
-use brick::{Brick, BrickType};
+use brick::*;
 use failure::{err_msg, Error};
-use utils::Pixels;
+use utils::{Pixels, Point};
+use wall::WALL_THICKNESS;
 
 #[derive(Deserialize, Serialize)]
 pub struct Level {
@@ -34,9 +35,19 @@ impl Level {
 impl Default for Level {
     fn default() -> Self {
         let mut bricks = vec![];
+        let offset = Point {
+            x: BRICK_WIDTH / 2. + BRICK_V_PAD + WALL_THICKNESS,
+            y: BRICK_HEIGHT / 2. + BRICK_H_PAD + WALL_THICKNESS,
+        };
+
         for i in 0..10 {
             for j in 0..6 {
-                bricks.push(Brick::new(BrickType::Simple, i as Pixels, j as Pixels));
+                let center = Point {
+                    x: i as Pixels * (BRICK_WIDTH + BRICK_V_PAD),
+                    y: j as Pixels * (BRICK_HEIGHT + BRICK_H_PAD),
+                };
+
+                bricks.push(Brick::new(BrickType::Simple, center + offset));
             }
         }
 

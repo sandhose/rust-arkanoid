@@ -2,540 +2,540 @@
   "bricks": [
     {
       "type": "simple",
-      "position": {
-        "x": 0,
-        "y": 0
+      "center": {
+        "x": 55,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 0,
-        "y": 1
+      "center": {
+        "x": 55,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 0,
-        "y": 2
+      "center": {
+        "x": 55,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 0,
-        "y": 3
+      "center": {
+        "x": 55,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 0,
-        "y": 4
+      "center": {
+        "x": 55,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 0,
-        "y": 5
+      "center": {
+        "x": 55,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 1,
-        "y": 0
+      "center": {
+        "x": 140,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 1,
-        "y": 1
+      "center": {
+        "x": 140,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 1,
-        "y": 2
+      "center": {
+        "x": 140,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 1,
-        "y": 3
+      "center": {
+        "x": 140,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 1,
-        "y": 4
+      "center": {
+        "x": 140,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 1,
-        "y": 5
+      "center": {
+        "x": 140,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 2,
-        "y": 0
+      "center": {
+        "x": 225,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 2,
-        "y": 1
+      "center": {
+        "x": 225,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 2,
-        "y": 2
+      "center": {
+        "x": 225,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 2,
-        "y": 3
+      "center": {
+        "x": 225,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 2,
-        "y": 4
+      "center": {
+        "x": 225,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 2,
-        "y": 5
+      "center": {
+        "x": 225,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 3,
-        "y": 0
+      "center": {
+        "x": 310,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 3,
-        "y": 1
+      "center": {
+        "x": 310,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 3,
-        "y": 2
+      "center": {
+        "x": 310,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 3,
-        "y": 3
+      "center": {
+        "x": 310,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 3,
-        "y": 4
+      "center": {
+        "x": 310,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 3,
-        "y": 5
+      "center": {
+        "x": 310,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 4,
-        "y": 0
+      "center": {
+        "x": 395,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 4,
-        "y": 1
+      "center": {
+        "x": 395,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 4,
-        "y": 2
+      "center": {
+        "x": 395,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 4,
-        "y": 3
+      "center": {
+        "x": 395,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 4,
-        "y": 4
+      "center": {
+        "x": 395,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 4,
-        "y": 5
+      "center": {
+        "x": 395,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 5,
-        "y": 0
+      "center": {
+        "x": 480,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 5,
-        "y": 1
+      "center": {
+        "x": 480,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 5,
-        "y": 2
+      "center": {
+        "x": 480,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 5,
-        "y": 3
+      "center": {
+        "x": 480,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 5,
-        "y": 4
+      "center": {
+        "x": 480,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 5,
-        "y": 5
+      "center": {
+        "x": 480,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 6,
-        "y": 0
+      "center": {
+        "x": 565,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 6,
-        "y": 1
+      "center": {
+        "x": 565,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 6,
-        "y": 2
+      "center": {
+        "x": 565,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 6,
-        "y": 3
+      "center": {
+        "x": 565,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 6,
-        "y": 4
+      "center": {
+        "x": 565,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 6,
-        "y": 5
+      "center": {
+        "x": 565,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 7,
-        "y": 0
+      "center": {
+        "x": 650,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 7,
-        "y": 1
+      "center": {
+        "x": 650,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 7,
-        "y": 2
+      "center": {
+        "x": 650,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 7,
-        "y": 3
+      "center": {
+        "x": 650,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 7,
-        "y": 4
+      "center": {
+        "x": 650,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 7,
-        "y": 5
+      "center": {
+        "x": 650,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 8,
-        "y": 0
+      "center": {
+        "x": 735,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 8,
-        "y": 1
+      "center": {
+        "x": 735,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 8,
-        "y": 2
+      "center": {
+        "x": 735,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 8,
-        "y": 3
+      "center": {
+        "x": 735,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 8,
-        "y": 4
+      "center": {
+        "x": 735,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 8,
-        "y": 5
+      "center": {
+        "x": 735,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 9,
-        "y": 0
+      "center": {
+        "x": 820,
+        "y": 35
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 9,
-        "y": 1
+      "center": {
+        "x": 820,
+        "y": 80
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 9,
-        "y": 2
+      "center": {
+        "x": 820,
+        "y": 125
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 9,
-        "y": 3
+      "center": {
+        "x": 820,
+        "y": 170
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 9,
-        "y": 4
+      "center": {
+        "x": 820,
+        "y": 215
       },
       "breakable": true,
       "hitpoints": 1
     },
     {
       "type": "simple",
-      "position": {
-        "x": 9,
-        "y": 5
+      "center": {
+        "x": 820,
+        "y": 260
       },
       "breakable": true,
       "hitpoints": 1
