@@ -8,6 +8,9 @@ authors = [
 
 [dependencies]
 failure = "0.1.2"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
 
 [dependencies.sdl2]
 version = "0.32.0"

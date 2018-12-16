@@ -12,18 +12,21 @@ pub const BRICK_HEIGHT: Pixels = 40.0;
 pub const BRICK_V_PAD: Pixels = 5.0;
 pub const BRICK_H_PAD: Pixels = 5.0;
 
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
 pub enum BrickType {
     Simple,
     Hard,
     Super,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct Brick {
+    #[serde(rename = "type")]
+    brick_type: BrickType,
     pub position: Point,
     pub breakable: bool,
     pub hitpoints: u8,
-    pub color: sdl2::pixels::Color,
 }
 
 impl Brick {
@@ -32,23 +35,31 @@ impl Brick {
 
         match brick_type {
             BrickType::Simple => Brick {
+                brick_type,
                 position,
                 breakable: true,
                 hitpoints: 1,
-                color: sdl2::pixels::Color::RGBA(200, 0, 200, 200),
             },
             BrickType::Hard => Brick {
+                brick_type,
                 position,
                 breakable: true,
                 hitpoints: 2,
-                color: sdl2::pixels::Color::RGBA(0, 200, 200, 200),
             },
             BrickType::Super => Brick {
+                brick_type,
                 position,
                 breakable: false,
                 hitpoints: 0,
-                color: sdl2::pixels::Color::RGBA(200, 200, 0, 200),
             },
+        }
+    }
+
+    fn color(&self) -> sdl2::pixels::Color {
+        match &self.brick_type {
+            BrickType::Simple => sdl2::pixels::Color::RGBA(200, 0, 200, 200),
+            BrickType::Hard => sdl2::pixels::Color::RGBA(0, 200, 200, 200),
+            BrickType::Super => sdl2::pixels::Color::RGBA(200, 200, 0, 200),
         }
     }
 }
@@ -64,7 +75,7 @@ where
     T: RenderTarget,
 {
     fn render(&self, canvas: &mut Canvas<T>) -> Result<(), failure::Error> {
-        canvas.set_draw_color(self.color);
+        canvas.set_draw_color(self.color());
         let (xg, xd) = self.get_x();
         let (yh, yb) = self.get_y();
         canvas

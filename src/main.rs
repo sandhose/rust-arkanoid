@@ -1,6 +1,12 @@
 extern crate failure;
 extern crate sdl2;
 
+#[macro_use]
+extern crate serde_derive;
+
+extern crate serde;
+extern crate serde_json;
+
 pub mod ball;
 pub mod brick;
 // pub mod store; // Not used for now
@@ -14,7 +20,6 @@ pub mod wall;
 use level::Level;
 use state::State;
 use traits::*;
-use utils::{Pixels, Point};
 
 use failure::{err_msg, Error};
 use sdl2::event::Event;
@@ -23,9 +28,6 @@ use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 use sdl2::{EventPump, Sdl};
-
-const BRICK_COL: u32 = 10;
-const BRICK_ROW: u32 = 6;
 
 fn init(width: f32, height: f32) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
     let sdl_context = sdl2::init().map_err(err_msg)?;
@@ -48,7 +50,7 @@ fn init(width: f32, height: f32) -> Result<(Sdl, Canvas<Window>, EventPump), Err
 }
 
 fn main() {
-    let level = Level::default();
+    let level = Level::load_file("levels/default.json").expect("Could not load level file");
     let (_sdl_context, mut canvas, mut event_pump) = init(level.height(), level.width()).unwrap();
     let mut state = State::new(level);
 

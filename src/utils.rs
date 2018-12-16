@@ -3,7 +3,7 @@ use std::ops::{Add, Mul};
 use ball;
 use traits;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Deserialize, Serialize)]
 pub struct Point {
     pub x: f32,
     pub y: f32,
