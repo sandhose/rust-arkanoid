@@ -1,6 +1,6 @@
 use rand::Rng;
-use sdl2::render::{Canvas, RenderTarget};
 use std::collections::HashMap;
+use sdl2::render::{Canvas, RenderTarget, Texture};
 
 use ball::{Ball, BALL_RADIUS};
 use bonus::{ActiveBonus, BonusType, FallingBonus};
@@ -116,20 +116,21 @@ where
         &self,
         canvas: &mut Canvas<T>,
         context: &RenderContext,
+        texture: &Texture,
     ) -> Result<(), failure::Error> {
         for brick in &self.bricks {
-            brick.render(canvas, context)?;
+            brick.render(canvas, context, texture)?;
         }
         for wall in &self.walls {
-            wall.render(canvas, context)?;
+            wall.render(canvas, context, texture)?;
         }
         for bonus in &self.bonuses {
-            bonus.render(canvas, context)?;
+            bonus.render(canvas, context, texture)?;
         }
         for ball in &self.balls {
-            ball.render(canvas, context)?;
+            ball.render(canvas, context, texture)?;
         }
-        self.player.render(canvas, context)?;
+        self.player.render(canvas, context, texture)?;
         Ok(())
     }
 }

@@ -4,7 +4,7 @@ use rand::Rng;
 
 use sdl2::pixels::Color;
 use sdl2::rect::Rect as SDLRect;
-use sdl2::render::{Canvas, RenderTarget};
+use sdl2::render::{Canvas, RenderTarget, Texture};
 
 use resize::RenderContext;
 use shape::Circle;
@@ -70,7 +70,7 @@ impl<T> Renderable<T> for FallingBonus
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), Error> {
+    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext, _texture: &Texture) -> Result<(), Error> {
         canvas.set_draw_color(self.bonus_type.color());
         canvas
             .fill_rect(SDLRect::from_center(

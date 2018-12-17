@@ -1,6 +1,6 @@
 use failure::err_msg;
 use sdl2::rect::Rect;
-use sdl2::render::{Canvas, RenderTarget};
+use sdl2::render::{Canvas, RenderTarget, Texture};
 
 use resize::RenderContext;
 use shape::{InfiniteWall, WallOrientation};
@@ -73,6 +73,7 @@ where
         &self,
         canvas: &mut Canvas<T>,
         context: &RenderContext,
+        _texture: &Texture,
     ) -> Result<(), failure::Error> {
         canvas.set_draw_color(sdl2::pixels::Color::RGBA(127, 127, 127, 255));
         canvas

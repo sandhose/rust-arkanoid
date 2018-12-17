@@ -1,10 +1,11 @@
 use failure::err_msg;
 use resize::RenderContext;
 use sdl2::rect::Rect as SDLRect;
-use sdl2::render::{Canvas, RenderTarget};
+use sdl2::render::{Canvas, RenderTarget, Texture};
 
 use shape::Rect;
-use traits::{Collision, Renderable, Updatable};
+use traits::{Renderable, Updatable, Collision};
+use textures::{TextureMaker, VesselSprite};
 use utils::{Pixels, Point, Vector};
 
 const PLAYER_INITIAL_WIDTH: Pixels = 80.0;
@@ -72,15 +73,24 @@ where
         &self,
         canvas: &mut Canvas<T>,
         context: &RenderContext,
+        texture: &Texture,
     ) -> Result<(), failure::Error> {
-        canvas.set_draw_color(sdl2::pixels::Color::RGBA(255, 255, 255, 255));
-        canvas
-            .fill_rect(SDLRect::from_center(
+        // canvas
+        //     .fill_rect(SDLRect::from_center(
+        //         context.translate_point(self.position),
+        //         context.scale(PLAYER_WIDTH),
+        //         context.scale(PLAYER_THICKNESS),
+        //     ))
+        //     .map_err(err_msg)?;
+        let copy_rects = TextureMaker::vessel(
+            VesselSprite::Size1,
+            SDLRect::from_center(
                 context.translate_point(self.position),
                 context.scale(self.width),
                 context.scale(PLAYER_THICKNESS),
-            ))
-            .map_err(err_msg)?;
+            )
+        );
+        canvas.copy(texture, copy_rects.src, copy_rects.dst).map_err(err_msg)?;
         Ok(())
     }
 }

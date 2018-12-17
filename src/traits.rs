@@ -9,6 +9,7 @@ where
         &self,
         &mut sdl2::render::Canvas<T>,
         &resize::RenderContext,
+        &sdl2::render::Texture,
     ) -> Result<(), failure::Error>;
 }
 

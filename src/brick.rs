@@ -1,7 +1,8 @@
 use failure::err_msg;
 use sdl2::rect::Rect as SDLRect;
-use sdl2::render::{Canvas, RenderTarget};
+use sdl2::render::{Canvas, RenderTarget, Texture};
 use traits::Renderable;
+use textures::{TextureMaker, BrickSprite};
 
 use resize::RenderContext;
 use shape::Rect;
@@ -61,14 +62,6 @@ impl Brick {
         self.hitpoints > 0 || !self.breakable
     }
 
-    fn color(&self) -> sdl2::pixels::Color {
-        match &self.hitpoints {
-            1 => sdl2::pixels::Color::RGBA(200, 0, 200, 200),
-            2 => sdl2::pixels::Color::RGBA(0, 200, 200, 200),
-            _ => sdl2::pixels::Color::RGBA(200, 200, 0, 200),
-        }
-    }
-
     pub fn shape(&self) -> Rect {
         self.into()
     }
@@ -88,15 +81,17 @@ where
         &self,
         canvas: &mut Canvas<T>,
         context: &RenderContext,
+        texture: &Texture,
     ) -> Result<(), failure::Error> {
-        canvas.set_draw_color(self.color());
-        canvas
-            .fill_rect(SDLRect::from_center(
+        let copy_rects = TextureMaker::brick(
+            BrickSprite::Red,
+            SDLRect::from_center(
                 context.translate_point(self.center),
                 context.scale(self.width),
                 context.scale(self.height),
-            ))
-            .map_err(err_msg)?;
+            )
+        );
+        canvas.copy(texture, copy_rects.src, copy_rects.dst).map_err(err_msg)?;
         Ok(())
     }
 }

@@ -34,8 +34,6 @@ mod textures;
 use level::Level;
 use resize::{RenderContext, Size};
 use state::State;
-use utils::Pixels;
-use textures::{TextureMaker, BrickSprite, CopyTool};
 use traits::*;
 
 fn init(width: u32, height: u32) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
@@ -82,13 +80,7 @@ fn main() {
         if !won && alive {
             canvas.set_draw_color(Color::RGB(0, 0, 0));
             canvas.clear();
-
-            canvas.copy(
-                    &texture,
-                    sdl2::rect::Rect::new(128, 128, 64, 64),
-                    sdl2::rect::Rect::new(100, 100, 32, 32)
-            );
-            // state.render(&mut canvas, &context).unwrap();
+             state.render(&mut canvas, &context, &texture).unwrap();
             canvas.present();
 
             let now = Instant::now();
