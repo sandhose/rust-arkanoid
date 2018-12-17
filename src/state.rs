@@ -19,11 +19,11 @@ pub struct State {
     pit: Wall,
     bonuses: Vec<FallingBonus>,
     active_bonuses: Vec<ActiveBonus>,
-    pub player: Player,
+    player: Player,
     pub ball: Ball,
 }
 
-pub const BALL_SPEED: f64 = 500.;
+pub const BALL_SPEED: f64 = 400.;
 
 impl State {
     pub fn new(level: Level) -> State {
@@ -33,14 +33,10 @@ impl State {
             pit: Wall::pit(level.height() as f64, level.width() as f64),
             bonuses: Vec::new(),
             active_bonuses: Vec::new(),
-            player: Player {
-                position: Point {
-                    x: level.width() as f64 * 0.5,
-                    y: level.height() as f64 - 30.0,
-                },
-                velocity: 0.,
-                acceleration: 0.,
-            },
+            player: Player::new(Point::new(
+                level.width() as f64 * 0.5,
+                level.height() as f64 - 30.0,
+            )),
             ball: Ball {
                 position: Point { x: 100.0, y: 350.0 },
                 velocity: Vector {
@@ -50,6 +46,10 @@ impl State {
                 color: Color::RGBA(120, 120, 200, 230),
             },
         }
+    }
+
+    pub fn input(&mut self, input: f64) {
+        self.player.input(input);
     }
 
     pub fn queue_bonus(&mut self, b: ActiveBonus) {
@@ -93,16 +93,11 @@ impl Updatable for State {
         self.player.update(dt);
 
         for brick in &mut self.bricks {
-            if let Some((normal, depth)) = brick.shape().collide(&self.ball.shape()) {
-                self.ball.velocity = self.ball.velocity | normal;
-                self.ball.position = self.ball.position
-                    + Point::from(Vector {
-                        angle: normal,
-                        norm: depth,
-                    });
+            if let Some(collision) = brick.shape().collide(&self.ball.shape()) {
+                self.ball.bounce(collision);
                 brick.damage();
 
-                if rand::thread_rng().gen_bool(1. / 10.) {
+                if !brick.alive() && rand::thread_rng().gen_bool(1. / 10.) {
                     self.bonuses.push(FallingBonus::random(self.ball.position));
                 }
             }
@@ -110,13 +105,8 @@ impl Updatable for State {
 
         self.bricks.retain(Brick::alive);
 
-        if let Some((normal, depth)) = self.player.shape().collide(&self.ball.shape()) {
-            self.ball.velocity = self.ball.velocity | normal;
-            self.ball.position = self.ball.position
-                + Point::from(Vector {
-                    angle: normal,
-                    norm: depth,
-                });
+        if let Some(collision) = self.player.shape().collide(&self.ball.shape()) {
+            self.ball.bounce(collision);
         }
 
         // Make the bonuses fall
@@ -168,24 +158,13 @@ impl Updatable for State {
 
         for wall in &self.walls {
             // Check for collisions between walls and the ball
-            if let Some((normal, depth)) = wall.shape.collide(&self.ball.shape()) {
-                self.ball.velocity = self.ball.velocity | normal;
-                self.ball.position = self.ball.position
-                    + Point::from(Vector {
-                        angle: normal,
-                        norm: depth,
-                    });
+            if let Some(collision) = wall.shape.collide(&self.ball.shape()) {
+                self.ball.bounce(collision);
             }
 
             // …and between the walls and the player
-            if let Some((normal, depth)) = wall.shape.collide(&self.player.shape()) {
-                self.player.velocity = -self.player.velocity;
-                self.player.position.x = self.player.position.x
-                    + Vector {
-                        angle: normal,
-                        norm: depth,
-                    }
-                    .x();
+            if let Some(collision) = wall.shape.collide(&self.player.shape()) {
+                self.player.bounce(collision);
             }
         }
     }

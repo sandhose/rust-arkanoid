@@ -2,7 +2,6 @@ pub use std::f64::consts::PI;
 use std::ops::{Add, BitOr, Mul, Sub};
 
 pub type Rad = f64;
-pub type Deg = f64;
 pub type Pixels = f64;
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]

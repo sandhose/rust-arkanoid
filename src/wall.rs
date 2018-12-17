@@ -9,7 +9,6 @@ use utils::{Pixels, Point};
 
 pub const WALL_THICKNESS: Pixels = 4.0;
 
-// DONE: refactored this
 pub struct Wall {
     width: Pixels,
     height: Pixels,

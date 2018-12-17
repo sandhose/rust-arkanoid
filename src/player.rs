@@ -2,21 +2,20 @@ use failure::err_msg;
 use resize::RenderContext;
 use sdl2::rect::Rect as SDLRect;
 use sdl2::render::{Canvas, RenderTarget};
-use traits::{Renderable, Updatable};
 
 use shape::Rect;
-use utils;
+use traits::{Collision, Renderable, Updatable};
+use utils::{Pixels, Point, Vector};
 
-pub const PLAYER_WIDTH: utils::Pixels = 80.0;
-pub const PLAYER_THICKNESS: utils::Pixels = 16.0;
-pub const PLAYER_END_RADIUS: utils::Pixels = PLAYER_THICKNESS * 0.5;
+const PLAYER_WIDTH: Pixels = 80.0;
+const PLAYER_THICKNESS: Pixels = 16.0;
 const PLAYER_FRICTION: f64 = 10.;
 const PLAYER_ACCELERATION: f64 = 5000.;
 
 pub struct Player {
-    pub position: utils::Point,
-    pub velocity: utils::Pixels,
-    pub acceleration: utils::Pixels,
+    position: Point,
+    velocity: Pixels,
+    acceleration: Pixels,
 }
 
 impl Into<Rect> for &Player {
@@ -26,6 +25,28 @@ impl Into<Rect> for &Player {
 }
 
 impl Player {
+    pub fn new(position: Point) -> Player {
+        Player {
+            position,
+            velocity: 0.,
+            acceleration: 0.,
+        }
+    }
+
+    pub fn input(&mut self, input: f64) {
+        self.acceleration = input;
+    }
+
+    pub fn bounce(&mut self, (normal, depth): Collision) {
+        self.velocity = -self.velocity;
+        self.position.x = self.position.x
+            + Vector {
+                angle: normal,
+                norm: depth,
+            }
+            .x();
+    }
+
     pub fn shape(&self) -> Rect {
         self.into()
     }

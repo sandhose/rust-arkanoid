@@ -1,11 +1,11 @@
-use resize::RenderContext;
-use shape::Circle;
-use traits::{Renderable, Updatable};
-use utils::{Pixels, Point, Vector};
-
 use failure::{err_msg, Error};
 use sdl2::gfx::primitives::DrawRenderer;
 use sdl2::render::{Canvas, RenderTarget};
+
+use resize::RenderContext;
+use shape::Circle;
+use traits::{Collision, Renderable, Updatable};
+use utils::{Pixels, Point, Vector};
 
 const BALL_RADIUS: Pixels = 8.0;
 
@@ -24,6 +24,15 @@ impl Into<Circle> for &Ball {
 impl Ball {
     pub fn shape(&self) -> Circle {
         self.into()
+    }
+
+    pub fn bounce(&mut self, (normal, depth): Collision) {
+        self.velocity = self.velocity | normal;
+        self.position = self.position
+            + Point::from(Vector {
+                angle: normal,
+                norm: depth,
+            });
     }
 }
 

@@ -1,11 +1,6 @@
 use resize;
 use utils;
 
-pub struct UpdateFrame {
-    pub dt: f64,
-    pub player_input: f64,
-}
-
 pub trait Renderable<T>
 where
     T: sdl2::render::RenderTarget,

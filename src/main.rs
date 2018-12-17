@@ -8,24 +8,6 @@ extern crate serde_derive;
 extern crate serde;
 extern crate serde_json;
 
-pub mod ball;
-pub mod bonus;
-pub mod brick;
-// pub mod store; // Not used for now
-pub mod level;
-pub mod player;
-pub mod resize;
-pub mod shape;
-pub mod state;
-pub mod traits;
-pub mod utils;
-pub mod wall;
-
-use level::Level;
-use resize::{RenderContext, Size};
-use state::State;
-use traits::*;
-
 use failure::{err_msg, Error};
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::{KeyboardState, Keycode, Scancode};
@@ -34,6 +16,23 @@ use sdl2::render::Canvas;
 use sdl2::video::Window;
 use sdl2::{EventPump, Sdl};
 use std::time::Instant;
+
+mod ball;
+mod bonus;
+mod brick;
+mod level;
+mod player;
+mod resize;
+mod shape;
+mod state;
+mod traits;
+mod utils;
+mod wall;
+
+use level::Level;
+use resize::{RenderContext, Size};
+use state::State;
+use traits::*;
 
 fn init(width: u32, height: u32) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
     let sdl_context = sdl2::init().map_err(err_msg)?;
@@ -85,7 +84,7 @@ fn main() {
             input as f64
         };
 
-        state.player.acceleration = player_input;
+        state.input(player_input);
         state.update(dt);
 
         for event in event_pump.poll_iter() {
@@ -95,20 +94,6 @@ fn main() {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'running,
-
-                Event::KeyDown {
-                    keycode: Some(Keycode::Up),
-                    ..
-                } => {
-                    state.ball.velocity.norm *= 1.5;
-                }
-
-                Event::KeyDown {
-                    keycode: Some(Keycode::Down),
-                    ..
-                } => {
-                    state.ball.velocity.norm /= 1.5;
-                }
 
                 Event::Window {
                     win_event: WindowEvent::SizeChanged(_, _),
