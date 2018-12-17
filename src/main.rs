@@ -25,6 +25,7 @@ use state::State;
 use traits::*;
 use utils::Pixels;
 
+use std::time::Instant;
 use failure::{err_msg, Error};
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::{KeyboardState, Keycode, Scancode};
@@ -62,7 +63,13 @@ fn main() {
         Size::new(canvas.window().drawable_size()),
     );
 
+    let mut last_update = Instant::now();
     'running: loop {
+        let now = Instant::now();
+        let dt = now.duration_since(last_update);
+        let dt: f64 = dt.as_secs() as f64 + dt.subsec_nanos() as f64 * 1e-9;
+        last_update = now;
+
         let player_input = {
             let keyboard_state = KeyboardState::new(&event_pump);
             let mut input = 0;
@@ -74,6 +81,9 @@ fn main() {
             }
             input as f64
         };
+
+        state.player.acceleration = player_input;
+        state.update(dt);
 
         for event in event_pump.poll_iter() {
             match event {
@@ -112,9 +122,6 @@ fn main() {
             }
         }
 
-        state.player.acceleration = player_input;
-
-        state.update();
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
         state.render(&mut canvas, &context).unwrap();

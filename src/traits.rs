@@ -18,7 +18,7 @@ where
 }
 
 pub trait Updatable {
-    fn update(&mut self);
+    fn update(&mut self, dt: f64);
 }
 
 pub type Collision = (utils::Rad, utils::Pixels);

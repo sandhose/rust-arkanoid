@@ -1,7 +1,7 @@
 use failure::err_msg;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget};
-use traits::{Renderable, Updatable};
+use traits::Renderable;
 
 use resize::RenderContext;
 use shape;
@@ -63,12 +63,6 @@ impl Brick {
 
     pub fn shape(&self) -> shape::Rect {
         shape::Rect::from(self)
-    }
-}
-
-impl Updatable for Brick {
-    fn update(&mut self) {
-        return;
     }
 }
 

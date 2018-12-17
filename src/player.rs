@@ -10,8 +10,8 @@ use utils;
 pub const PLAYER_WIDTH: utils::Pixels = 80.0;
 pub const PLAYER_THICKNESS: utils::Pixels = 16.0;
 pub const PLAYER_END_RADIUS: utils::Pixels = PLAYER_THICKNESS * 0.5;
-const PLAYER_FRICTION: f64 = 0.3;
-const PLAYER_ACCELERATION: f64 = 0.5;
+const PLAYER_FRICTION: f64 = 10.;
+const PLAYER_ACCELERATION: f64 = 5000.;
 
 pub struct Player {
     pub position: utils::Point,
@@ -48,14 +48,15 @@ where
 }
 
 impl Updatable for Player {
-    fn update(&mut self) {
-        self.velocity +=
+    fn update(&mut self, dt: f64) {
+        let acceleration =
             (self.acceleration * PLAYER_ACCELERATION) - (self.velocity * PLAYER_FRICTION);
+        self.velocity += acceleration * dt;
 
-        if self.velocity.abs() < 0.1 {
+        if self.velocity.abs() < 1. {
             self.velocity = 0.;
         }
 
-        self.position.x += self.velocity;
+        self.position.x += self.velocity * dt;
     }
 }

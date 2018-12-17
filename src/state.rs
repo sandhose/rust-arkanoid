@@ -35,9 +35,8 @@ impl State {
                 position: Point { x: 100.0, y: 350.0 },
                 velocity: Vector {
                     angle: std::f64::consts::PI / 4.0,
-                    norm: 2.0,
+                    norm: 500.0,
                 },
-                acceleration: 0.0,
                 color: Color::RGBA(120, 120, 200, 230),
             },
         }
@@ -72,9 +71,9 @@ where
 }
 
 impl Updatable for State {
-    fn update(&mut self) {
-        self.ball.update();
-        self.player.update();
+    fn update(&mut self, dt: f64) {
+        self.ball.update(dt);
+        self.player.update(dt);
 
         let mut remove: i64 = -1;
         for (i, brick) in self.bricks.iter().enumerate() {
