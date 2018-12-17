@@ -1,5 +1,4 @@
 use rand::Rng;
-use sdl2::pixels::Color;
 use sdl2::render::{Canvas, RenderTarget};
 use std::collections::HashMap;
 
@@ -10,8 +9,10 @@ use level::Level;
 use player::Player;
 use resize::RenderContext;
 use traits::{Collide, Renderable, Updatable};
-use utils::{Point, Vector};
+use utils::{Point, PI};
 use wall::Wall;
+
+const MAX_BALLS: usize = 16;
 
 pub struct State {
     bricks: Vec<Brick>,
@@ -20,10 +21,8 @@ pub struct State {
     bonuses: Vec<FallingBonus>,
     active_bonuses: Vec<ActiveBonus>,
     player: Player,
-    ball: Ball,
+    balls: Vec<Ball>,
 }
-
-const BALL_SPEED: f64 = 400.;
 
 impl State {
     pub fn new(level: Level) -> State {
@@ -37,14 +36,7 @@ impl State {
                 level.width() as f64 * 0.5,
                 level.height() as f64 - 30.0,
             )),
-            ball: Ball {
-                position: Point { x: 100.0, y: 350.0 },
-                velocity: Vector {
-                    angle: std::f64::consts::PI / 4.0,
-                    norm: BALL_SPEED,
-                },
-                color: Color::RGBA(120, 120, 200, 230),
-            },
+            balls: vec![Ball::new(Point::new(100.0, 350.0), PI / 4.0)],
         }
     }
 
@@ -60,13 +52,28 @@ impl State {
         match bonus {
             BonusType::Slow => self.queue_bonus(ActiveBonus::from(bonus)),
             BonusType::Expand => self.player.grow(),
+            BonusType::Divide => {
+                let mut to_add = Vec::new();
+                for ball in &self.balls {
+                    let mut new = ball.clone();
+                    new.rotate(2. * PI / 3.);
+                    to_add.push(new);
+                    let mut new = ball.clone();
+                    new.rotate(-2. * PI / 3.);
+                    to_add.push(new);
+                }
+                self.balls.extend(to_add);
+                self.balls.truncate(MAX_BALLS);
+            }
         }
     }
 
     fn bonus_stack(&mut self, bonus: BonusType, count: usize) {
         match bonus {
             BonusType::Slow => {
-                self.ball.velocity.norm = BALL_SPEED / (count + 1) as f64;
+                for ref mut ball in &mut self.balls {
+                    ball.speed(count);
+                }
             }
             _ => {}
         }
@@ -97,32 +104,41 @@ where
         for bonus in &self.bonuses {
             bonus.render(canvas, context)?;
         }
+        for ball in &self.balls {
+            ball.render(canvas, context)?;
+        }
         self.player.render(canvas, context)?;
-        self.ball.render(canvas, context)?;
         Ok(())
     }
 }
 
 impl Updatable for State {
     fn update(&mut self, dt: f64) {
-        self.ball.update(dt);
+        for ref mut ball in &mut self.balls {
+            ball.update(dt);
+        }
+
         self.player.update(dt);
 
         for brick in &mut self.bricks {
-            if let Some(collision) = brick.shape().collide(&self.ball.shape()) {
-                self.ball.bounce(collision);
-                brick.damage();
+            for ref mut ball in &mut self.balls {
+                if let Some(collision) = brick.shape().collide(&ball.shape()) {
+                    ball.bounce(collision);
+                    brick.damage();
 
-                if !brick.alive() && rand::thread_rng().gen_bool(1. / 10.) {
-                    self.bonuses.push(FallingBonus::random(self.ball.position));
+                    if !brick.alive() && rand::thread_rng().gen_bool(1. / 1.) {
+                        self.bonuses.push(FallingBonus::random(brick.center));
+                    }
                 }
             }
         }
 
         self.bricks.retain(Brick::alive);
 
-        if let Some(collision) = self.player.shape().collide(&self.ball.shape()) {
-            self.ball.bounce(collision);
+        for ref mut ball in &mut self.balls {
+            if let Some(collision) = self.player.shape().collide(&ball.shape()) {
+                ball.bounce(collision);
+            }
         }
 
         // Make the bonuses fall
@@ -173,9 +189,11 @@ impl Updatable for State {
         }
 
         for wall in &self.walls {
-            // Check for collisions between walls and the ball
-            if let Some(collision) = wall.shape.collide(&self.ball.shape()) {
-                self.ball.bounce(collision);
+            // Check for collisions between walls and the balls
+            for ref mut ball in &mut self.balls {
+                if let Some(collision) = wall.shape.collide(&ball.shape()) {
+                    ball.bounce(collision);
+                }
             }
 
             // …and between the walls and the player

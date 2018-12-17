@@ -18,7 +18,7 @@ pub enum BrickType {
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Brick {
     #[serde(rename = "type")]
-    center: Point,
+    pub center: Point,
     width: Pixels,
     height: Pixels,
     breakable: bool,
@@ -75,7 +75,7 @@ impl Brick {
     }
 
     pub fn damage(&mut self) {
-        if self.breakable {
+        if self.breakable && self.hitpoints > 0 {
             self.hitpoints -= 1;
         }
     }

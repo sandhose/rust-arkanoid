@@ -1,18 +1,21 @@
 use failure::{err_msg, Error};
 use sdl2::gfx::primitives::DrawRenderer;
+use sdl2::pixels::Color;
 use sdl2::render::{Canvas, RenderTarget};
 
 use resize::RenderContext;
 use shape::Circle;
 use traits::{Collision, Renderable, Updatable};
-use utils::{Pixels, Point, Vector};
+use utils::{Pixels, Point, Rad, Vector, PI};
 
 const BALL_RADIUS: Pixels = 8.0;
+const BALL_SPEED: f64 = 400.;
 
+#[derive(Clone)]
 pub struct Ball {
-    pub position: Point,
+    position: Point,
     pub velocity: Vector,
-    pub color: sdl2::pixels::Color,
+    color: sdl2::pixels::Color,
 }
 
 impl Into<Circle> for &Ball {
@@ -22,8 +25,27 @@ impl Into<Circle> for &Ball {
 }
 
 impl Ball {
+    pub fn new(position: Point, angle: Rad) -> Ball {
+        Ball {
+            position,
+            velocity: Vector {
+                angle,
+                norm: BALL_SPEED,
+            },
+            color: Color::RGBA(120, 120, 200, 230),
+        }
+    }
+
     pub fn shape(&self) -> Circle {
         self.into()
+    }
+
+    pub fn speed(&mut self, n: usize) {
+        self.velocity.norm = BALL_SPEED / (n + 1) as f64;
+    }
+
+    pub fn rotate(&mut self, angle: Rad) {
+        self.velocity.angle = self.velocity.angle + angle % 2. * PI;
     }
 
     pub fn bounce(&mut self, (normal, depth): Collision) {
