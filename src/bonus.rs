@@ -8,7 +8,6 @@ use sdl2::render::{Canvas, RenderTarget};
 
 use resize::RenderContext;
 use shape::Circle;
-use state::{State, BALL_SPEED};
 use traits::{Renderable, Updatable};
 use utils::Point;
 
@@ -28,22 +27,6 @@ impl Distribution<BonusType> for Standard {
 }
 
 impl BonusType {
-    pub fn activate(self, state: &mut State) {
-        match self {
-            BonusType::Slow => state.queue_bonus(ActiveBonus::from(self)),
-            BonusType::Expand => {}
-        }
-    }
-
-    pub fn stack(self, state: &mut State, count: usize) {
-        match self {
-            BonusType::Slow => {
-                state.ball.velocity.norm = BALL_SPEED / (count + 1) as f64;
-            }
-            _ => {}
-        }
-    }
-
     pub fn color(self) -> Color {
         match self {
             BonusType::Slow => Color::RGBA(255, 0, 0, 255),

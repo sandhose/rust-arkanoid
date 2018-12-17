@@ -4,7 +4,7 @@ use sdl2::render::{Canvas, RenderTarget};
 use std::collections::HashMap;
 
 use ball::Ball;
-use bonus::{ActiveBonus, FallingBonus};
+use bonus::{ActiveBonus, BonusType, FallingBonus};
 use brick::Brick;
 use level::Level;
 use player::Player;
@@ -20,10 +20,10 @@ pub struct State {
     bonuses: Vec<FallingBonus>,
     active_bonuses: Vec<ActiveBonus>,
     player: Player,
-    pub ball: Ball,
+    ball: Ball,
 }
 
-pub const BALL_SPEED: f64 = 400.;
+const BALL_SPEED: f64 = 400.;
 
 impl State {
     pub fn new(level: Level) -> State {
@@ -52,8 +52,24 @@ impl State {
         self.player.input(input);
     }
 
-    pub fn queue_bonus(&mut self, b: ActiveBonus) {
+    fn queue_bonus(&mut self, b: ActiveBonus) {
         self.active_bonuses.push(b);
+    }
+
+    fn activate_bonus(&mut self, bonus: BonusType) {
+        match bonus {
+            BonusType::Slow => self.queue_bonus(ActiveBonus::from(bonus)),
+            BonusType::Expand => self.player.grow(),
+        }
+    }
+
+    fn bonus_stack(&mut self, bonus: BonusType, count: usize) {
+        match bonus {
+            BonusType::Slow => {
+                self.ball.velocity.norm = BALL_SPEED / (count + 1) as f64;
+            }
+            _ => {}
+        }
     }
 }
 
@@ -132,7 +148,7 @@ impl Updatable for State {
         });
 
         for b in to_activate {
-            b.activate(self);
+            self.activate_bonus(b);
         }
 
         // Update the timer on the active bonuses
@@ -152,8 +168,8 @@ impl Updatable for State {
             m
         };
 
-        for (bonus_type, &count) in active.iter() {
-            bonus_type.stack(self, count);
+        for (&bonus, &count) in active.iter() {
+            self.bonus_stack(bonus, count);
         }
 
         for wall in &self.walls {

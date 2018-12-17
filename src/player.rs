@@ -7,7 +7,9 @@ use shape::Rect;
 use traits::{Collision, Renderable, Updatable};
 use utils::{Pixels, Point, Vector};
 
-const PLAYER_WIDTH: Pixels = 80.0;
+const PLAYER_INITIAL_WIDTH: Pixels = 80.0;
+const PLAYER_GROWTH: Pixels = 20.0;
+const PLAYER_MAX_WIDTH: Pixels = 160.0;
 const PLAYER_THICKNESS: Pixels = 16.0;
 const PLAYER_FRICTION: f64 = 10.;
 const PLAYER_ACCELERATION: f64 = 5000.;
@@ -16,11 +18,12 @@ pub struct Player {
     position: Point,
     velocity: Pixels,
     acceleration: Pixels,
+    width: Pixels,
 }
 
 impl Into<Rect> for &Player {
     fn into(self) -> Rect {
-        Rect::new(self.position, PLAYER_WIDTH, PLAYER_THICKNESS)
+        Rect::new(self.position, self.width, PLAYER_THICKNESS)
     }
 }
 
@@ -30,7 +33,12 @@ impl Player {
             position,
             velocity: 0.,
             acceleration: 0.,
+            width: PLAYER_INITIAL_WIDTH,
         }
+    }
+
+    pub fn grow(&mut self) {
+        self.width = f64::min(self.width + PLAYER_GROWTH, PLAYER_MAX_WIDTH);
     }
 
     pub fn input(&mut self, input: f64) {
@@ -65,7 +73,7 @@ where
         canvas
             .fill_rect(SDLRect::from_center(
                 context.translate_point(self.position),
-                context.scale(PLAYER_WIDTH),
+                context.scale(self.width),
                 context.scale(PLAYER_THICKNESS),
             ))
             .map_err(err_msg)?;
