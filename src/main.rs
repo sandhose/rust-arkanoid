@@ -41,7 +41,7 @@ fn init(width: Pixels, height: Pixels) -> Result<(Sdl, Canvas<Window>, EventPump
         .window("Arkanoid", height as u32, width as u32)
         .position_centered()
         .resizable()
-        //.allow_highdpi()
+        .allow_highdpi()
         .build()?;
 
     let mut canvas = window.into_canvas().accelerated().present_vsync().build()?;

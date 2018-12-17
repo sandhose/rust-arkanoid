@@ -7,7 +7,7 @@ use failure::{err_msg, Error};
 use sdl2::gfx::primitives::DrawRenderer;
 use sdl2::render::{Canvas, RenderTarget};
 
-pub const BALL_RADIUS: utils::Pixels = 20.0;
+pub const BALL_RADIUS: utils::Pixels = 10.0;
 
 pub struct Ball {
     pub position: utils::Point,

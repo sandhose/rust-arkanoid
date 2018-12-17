@@ -203,18 +203,18 @@ impl Collide<Circle> for Rect {
                 radius: other.radius,
             },
             Circle {
-                // Bottom left
-                center: Point {
-                    x: self.center.x - self.width / 2.,
-                    y: self.center.y + self.height / 2.,
-                },
-                radius: other.radius,
-            },
-            Circle {
                 // Top right
                 center: Point {
                     x: self.center.x + self.width / 2.,
                     y: self.center.y - self.height / 2.,
+                },
+                radius: other.radius,
+            },
+            Circle {
+                // Bottom left
+                center: Point {
+                    x: self.center.x - self.width / 2.,
+                    y: self.center.y + self.height / 2.,
                 },
                 radius: other.radius,
             },

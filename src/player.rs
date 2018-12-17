@@ -39,8 +39,8 @@ where
         canvas
             .fill_rect(SDLRect::from_center(
                 context.translate_point(self.position),
-                PLAYER_WIDTH as u32,
-                PLAYER_THICKNESS as u32,
+                context.scale(PLAYER_WIDTH),
+                context.scale(PLAYER_THICKNESS),
             ))
             .map_err(err_msg)?;
         Ok(())
