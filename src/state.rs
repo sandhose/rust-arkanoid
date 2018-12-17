@@ -40,7 +40,6 @@ impl State {
                 },
                 velocity: 0.,
                 acceleration: 0.,
-                color: Color::RGBA(255, 0, 0, 255),
             },
             ball: Ball {
                 position: Point { x: 100.0, y: 350.0 },
@@ -108,8 +107,8 @@ impl Updatable for State {
                 }
             }
         }
-        self.bricks
-            .retain(|brick| !brick.breakable || brick.hitpoints > 0);
+
+        self.bricks.retain(Brick::alive);
 
         if let Some((normal, depth)) = self.player.shape().collide(&self.ball.shape()) {
             self.ball.velocity = self.ball.velocity | normal;

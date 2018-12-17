@@ -1,4 +1,7 @@
 use failure::{err_msg, Error};
+use rand::distributions::{Distribution, Standard};
+use rand::Rng;
+
 use sdl2::pixels::Color;
 use sdl2::rect::Rect as SDLRect;
 use sdl2::render::{Canvas, RenderTarget};
@@ -12,12 +15,23 @@ use utils::Point;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BonusType {
     Slow,
+    Expand,
+}
+
+impl Distribution<BonusType> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> BonusType {
+        match rng.gen_range(0, 2) {
+            0 => BonusType::Slow,
+            _ => BonusType::Expand,
+        }
+    }
 }
 
 impl BonusType {
     pub fn activate(self, state: &mut State) {
         match self {
             BonusType::Slow => state.queue_bonus(ActiveBonus::from(self)),
+            BonusType::Expand => {}
         }
     }
 
@@ -26,6 +40,14 @@ impl BonusType {
             BonusType::Slow => {
                 state.ball.velocity.norm = BALL_SPEED / (count + 1) as f64;
             }
+            _ => {}
+        }
+    }
+
+    pub fn color(self) -> Color {
+        match self {
+            BonusType::Slow => Color::RGBA(255, 0, 0, 255),
+            BonusType::Expand => Color::RGBA(0, 255, 0, 255),
         }
     }
 }
@@ -33,19 +55,25 @@ impl BonusType {
 #[derive(Debug)]
 pub struct FallingBonus {
     pub bonus_type: BonusType,
-    pub position: Point,
+    position: Point,
+}
+
+impl Into<Circle> for &FallingBonus {
+    fn into(self) -> Circle {
+        Circle::new(self.position, 12.)
+    }
 }
 
 impl FallingBonus {
     pub fn random(position: Point) -> Self {
         FallingBonus {
-            bonus_type: BonusType::Slow,
+            bonus_type: rand::random(),
             position,
         }
     }
 
     pub fn shape(&self) -> Circle {
-        Circle::from(self)
+        self.into()
     }
 }
 
@@ -54,7 +82,7 @@ where
     T: RenderTarget,
 {
     fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), Error> {
-        canvas.set_draw_color(Color::RGBA(200, 200, 200, 200));
+        canvas.set_draw_color(self.bonus_type.color());
         canvas
             .fill_rect(SDLRect::from_center(
                 context.translate_point(self.position),

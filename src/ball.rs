@@ -7,7 +7,7 @@ use failure::{err_msg, Error};
 use sdl2::gfx::primitives::DrawRenderer;
 use sdl2::render::{Canvas, RenderTarget};
 
-pub const BALL_RADIUS: Pixels = 8.0;
+const BALL_RADIUS: Pixels = 8.0;
 
 pub struct Ball {
     pub position: Point,
@@ -15,9 +15,15 @@ pub struct Ball {
     pub color: sdl2::pixels::Color,
 }
 
+impl Into<Circle> for &Ball {
+    fn into(self) -> Circle {
+        Circle::new(self.position, BALL_RADIUS)
+    }
+}
+
 impl Ball {
     pub fn shape(&self) -> Circle {
-        Circle::from(self)
+        self.into()
     }
 }
 

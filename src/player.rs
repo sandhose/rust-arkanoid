@@ -15,14 +15,19 @@ const PLAYER_ACCELERATION: f64 = 5000.;
 
 pub struct Player {
     pub position: utils::Point,
-    pub color: sdl2::pixels::Color,
     pub velocity: utils::Pixels,
     pub acceleration: utils::Pixels,
 }
 
+impl Into<Rect> for &Player {
+    fn into(self) -> Rect {
+        Rect::new(self.position, PLAYER_WIDTH, PLAYER_THICKNESS)
+    }
+}
+
 impl Player {
     pub fn shape(&self) -> Rect {
-        Rect::from(self)
+        self.into()
     }
 }
 
@@ -35,7 +40,7 @@ where
         canvas: &mut Canvas<T>,
         context: &RenderContext,
     ) -> Result<(), failure::Error> {
-        canvas.set_draw_color(self.color);
+        canvas.set_draw_color(sdl2::pixels::Color::RGBA(255, 255, 255, 255));
         canvas
             .fill_rect(SDLRect::from_center(
                 context.translate_point(self.position),

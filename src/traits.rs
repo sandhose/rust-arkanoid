@@ -26,9 +26,3 @@ pub type Collision = (utils::Rad, utils::Pixels);
 pub trait Collide<T> {
     fn collide(&self, &T) -> Option<Collision>;
 }
-
-// impl<T, U: Collide<T>> Collide<U> for T {
-//     fn collide(&self, other: &U) -> Option<utils::Rad> {
-//         other.collide(self)
-//     }
-// }

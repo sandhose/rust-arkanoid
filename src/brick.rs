@@ -1,10 +1,10 @@
 use failure::err_msg;
-use sdl2::rect::Rect;
+use sdl2::rect::Rect as SDLRect;
 use sdl2::render::{Canvas, RenderTarget};
 use traits::Renderable;
 
 use resize::RenderContext;
-use shape;
+use shape::Rect;
 use utils::{Pixels, Point};
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -18,11 +18,17 @@ pub enum BrickType {
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Brick {
     #[serde(rename = "type")]
-    pub center: Point,
-    pub width: Pixels,
-    pub height: Pixels,
-    pub breakable: bool,
-    pub hitpoints: u8,
+    center: Point,
+    width: Pixels,
+    height: Pixels,
+    breakable: bool,
+    hitpoints: u8,
+}
+
+impl Into<Rect> for &Brick {
+    fn into(self) -> Rect {
+        Rect::new(self.center, self.width, self.height)
+    }
 }
 
 impl Brick {
@@ -52,6 +58,10 @@ impl Brick {
         }
     }
 
+    pub fn alive(&self) -> bool {
+        self.hitpoints > 0 || !self.breakable
+    }
+
     fn color(&self) -> sdl2::pixels::Color {
         match &self.hitpoints {
             1 => sdl2::pixels::Color::RGBA(200, 0, 200, 200),
@@ -60,8 +70,8 @@ impl Brick {
         }
     }
 
-    pub fn shape(&self) -> shape::Rect {
-        shape::Rect::from(self)
+    pub fn shape(&self) -> Rect {
+        self.into()
     }
 
     pub fn damage(&mut self) {
@@ -82,7 +92,7 @@ where
     ) -> Result<(), failure::Error> {
         canvas.set_draw_color(self.color());
         canvas
-            .fill_rect(Rect::from_center(
+            .fill_rect(SDLRect::from_center(
                 context.translate_point(self.center),
                 context.scale(self.width),
                 context.scale(self.height),

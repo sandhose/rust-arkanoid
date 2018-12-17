@@ -1,7 +1,3 @@
-use ball::{Ball, BALL_RADIUS};
-use bonus::FallingBonus;
-use brick::Brick;
-use player::{Player, PLAYER_THICKNESS, PLAYER_WIDTH};
 use traits::{Collide, Collision};
 use utils::{Pixels, Point, Rad, Vector, PI};
 
@@ -17,22 +13,12 @@ pub struct Rect {
     height: Pixels,
 }
 
-impl From<&Brick> for Rect {
-    fn from(brick: &Brick) -> Self {
+impl Rect {
+    pub fn new(center: Point, width: Pixels, height: Pixels) -> Rect {
         Rect {
-            center: brick.center,
-            height: brick.height,
-            width: brick.width,
-        }
-    }
-}
-
-impl From<&Player> for Rect {
-    fn from(player: &Player) -> Self {
-        Rect {
-            center: player.position,
-            height: PLAYER_THICKNESS,
-            width: PLAYER_WIDTH,
+            center,
+            width,
+            height,
         }
     }
 }
@@ -43,21 +29,9 @@ pub struct Circle {
     radius: Pixels,
 }
 
-impl From<&Ball> for Circle {
-    fn from(ball: &Ball) -> Self {
-        Circle {
-            center: ball.position,
-            radius: BALL_RADIUS,
-        }
-    }
-}
-
-impl From<&FallingBonus> for Circle {
-    fn from(bonus: &FallingBonus) -> Self {
-        Circle {
-            center: bonus.position,
-            radius: 12.,
-        }
+impl Circle {
+    pub fn new(center: Point, radius: Pixels) -> Circle {
+        Circle { center, radius }
     }
 }
 
