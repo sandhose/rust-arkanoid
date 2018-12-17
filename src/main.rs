@@ -35,7 +35,7 @@ use level::Level;
 use resize::{RenderContext, Size};
 use state::State;
 use utils::Pixels;
-use textures::TextureMaker;
+use textures::{TextureMaker, BrickSprite, CopyTool};
 use traits::*;
 
 fn init(width: u32, height: u32) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {

@@ -23,7 +23,7 @@ pub enum BrickSprite {
 }
 
 impl TextureMaker {
-    fn brick(&self, sprite: BrickSprite, dst: Rect) -> CopyTool {
+    pub fn brick(sprite: BrickSprite, dst: Rect) -> CopyTool {
         let (w, h): (u32, u32) = (32, 16);
         match sprite {
             BrickSprite::White => CopyTool::new(Rect::new(0, 0, w, h), dst),
