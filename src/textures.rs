@@ -13,6 +13,7 @@ impl CopyTool {
 
 pub struct TextureMaker;
 
+#[allow(dead_code)]
 pub enum BrickSprite {
     White,
     LightRed,
@@ -40,6 +41,7 @@ pub enum BrickSprite {
     Gold6,
 }
 
+#[allow(dead_code)]
 pub enum BallSprite {
     Ball1,
     Ball2,
@@ -49,6 +51,7 @@ pub enum BallSprite {
     Ball6,
 }
 
+#[allow(dead_code)]
 pub enum VesselSprite {
     Size1,
     Size2,
@@ -60,6 +63,7 @@ pub enum VesselSprite {
     Size8,
 }
 
+#[allow(dead_code)]
 pub enum PowerUpSprite {
     Rot1,
     Rot2,
@@ -70,6 +74,8 @@ pub enum PowerUpSprite {
     Rot7,
     Rot8,
 }
+
+#[allow(dead_code)]
 pub enum PowerUpType {
     S,
     C,
@@ -80,6 +86,7 @@ pub enum PowerUpType {
     P,
 }
 
+#[allow(dead_code)]
 pub enum BackgroundSprite {
     Polygon,
     PolygonDark,
@@ -95,11 +102,13 @@ pub enum BackgroundSprite {
     PurpleDark,
 }
 
+#[allow(dead_code)]
 pub enum RocketSprite {
     Yellow,
     Blue,
 }
 
+#[allow(dead_code)]
 pub enum PropsSprite {
     Cone1,
     Pyramid1,
@@ -222,6 +231,7 @@ impl TextureMaker {
         CopyTool::new(Rect::new(x, y, w, h), dst)
     }
 
+    #[allow(dead_code)]
     pub fn rocket(sprite: RocketSprite, dst: Rect) -> CopyTool {
         let (y, w, h) = (79, 16, 40);
         let x = match sprite {
@@ -231,6 +241,7 @@ impl TextureMaker {
         CopyTool::new(Rect::new(x, y, w, h), dst)
     }
 
+    #[allow(dead_code)]
     pub fn background(sprite: BackgroundSprite, dst: Rect) -> CopyTool {
         let (w, h) = (64, 64);
         let xt = vec![0, 64, 128, 192, 256, 320];
@@ -260,6 +271,7 @@ impl TextureMaker {
         CopyTool::new(Rect::new(x, y, w, h), dst)
     }
 
+    #[allow(dead_code)]
     pub fn props(sprite: PropsSprite, dst: Rect) -> CopyTool {
         let (w, h): (u32, u32) = (16, 16);
         let xt = vec![256, 288, 320, 352, 384];
@@ -387,6 +399,7 @@ impl TextureMaker {
         CopyTool::new(Rect::new(x, y, w, h), dst)
     }
 
+    #[allow(dead_code)]
     pub fn powerups(sprite: PowerUpSprite, put: PowerUpType, dst: Rect) -> CopyTool {
         let (w, h) = (16, 16);
         let x = match put {
