@@ -28,10 +28,14 @@ mod state;
 mod traits;
 mod utils;
 mod wall;
+mod textures;
+
 
 use level::Level;
 use resize::{RenderContext, Size};
 use state::State;
+use utils::Pixels;
+use textures::TextureMaker;
 use traits::*;
 
 fn init(width: u32, height: u32) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
@@ -65,6 +69,11 @@ fn main() {
     );
     let mut state = State::new(level);
 
+    let creator = canvas.texture_creator();
+    let mut sprites = sdl2::surface::Surface::load_bmp(String::from("resources/default_sprites.bmp")).unwrap();
+    sprites.set_color_key(true, Color::RGB(0, 0, 0)).unwrap();
+    let texture = creator.create_texture_from_surface(sprites).unwrap();
+
     let mut last_update = Instant::now();
     'running: loop {
         let alive = state.alive();
@@ -73,7 +82,13 @@ fn main() {
         if !won && alive {
             canvas.set_draw_color(Color::RGB(0, 0, 0));
             canvas.clear();
-            state.render(&mut canvas, &context).unwrap();
+
+            canvas.copy(
+                    &texture,
+                    sdl2::rect::Rect::new(128, 128, 64, 64),
+                    sdl2::rect::Rect::new(100, 100, 32, 32)
+            );
+            // state.render(&mut canvas, &context).unwrap();
             canvas.present();
 
             let now = Instant::now();
