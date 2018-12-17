@@ -50,7 +50,7 @@ impl Wall {
         };
     }
 
-    fn pit(height: Pixels, width: Pixels) -> Self {
+    pub fn pit(height: Pixels, width: Pixels) -> Self {
         Wall {
             width: width,
             height: WALL_THICKNESS,

@@ -1,5 +1,6 @@
 use ball::{Ball, BALL_RADIUS};
 use brick::Brick;
+use bonus::Bonus;
 use player::{Player, PLAYER_THICKNESS, PLAYER_WIDTH};
 use traits::{Collide, Collision};
 use utils::{Pixels, Point, Rad, Vector, PI};
@@ -51,6 +52,16 @@ impl From<&Ball> for Circle {
     }
 }
 
+impl From<&Bonus> for Circle {
+    fn from(bonus: &Bonus) -> Self {
+        Circle {
+            center: bonus.position,
+            radius: 12.,
+        }
+    }
+}
+
+#[derive(Clone)]
 pub enum WallOrientation {
     Top,
     Bottom,
@@ -58,6 +69,7 @@ pub enum WallOrientation {
     Left,
 }
 
+#[derive(Clone)]
 pub struct InfiniteWall {
     pub orientation: WallOrientation,
     pub center: Point,

@@ -1,5 +1,10 @@
+use rand::Rng;
+use sdl2::pixels::Color;
+use sdl2::render::{Canvas, RenderTarget};
+
 use ball::Ball;
 use brick::Brick;
+use bonus::{Bonus, ActiveBonus, BonusType};
 use level::Level;
 use player::Player;
 use resize::RenderContext;
@@ -7,21 +12,26 @@ use traits::{Collide, Renderable, Updatable};
 use utils::{Point, Vector};
 use wall::Wall;
 
-use sdl2::pixels::Color;
-use sdl2::render::{Canvas, RenderTarget};
-
 pub struct State {
     bricks: Vec<Brick>,
     walls: Vec<Wall>,
+    pit: Wall,
+    bonuses: Vec<Bonus>,
+    active_bonuses: Vec<ActiveBonus>,
     pub player: Player,
     pub ball: Ball,
 }
+
+const BALL_SPEED: f64 = 500.;
 
 impl State {
     pub fn new(level: Level) -> State {
         State {
             bricks: level.bricks.clone(),
             walls: Wall::make_walls(level.height() as f64, level.width() as f64),
+            pit: Wall::pit(level.height() as f64, level.width() as f64),
+            bonuses: Vec::new(),
+            active_bonuses: Vec::new(),
             player: Player {
                 position: Point {
                     x: level.width() as f64 * 0.5,
@@ -35,7 +45,7 @@ impl State {
                 position: Point { x: 100.0, y: 350.0 },
                 velocity: Vector {
                     angle: std::f64::consts::PI / 4.0,
-                    norm: 500.0,
+                    norm: BALL_SPEED,
                 },
                 color: Color::RGBA(120, 120, 200, 230),
             },
@@ -64,6 +74,9 @@ where
         for wall in &self.walls {
             wall.render(canvas, context)?;
         }
+        for bonus in &self.bonuses {
+            bonus.render(canvas, context)?;
+        }
         self.player.render(canvas, context)?;
         self.ball.render(canvas, context)?;
         Ok(())
@@ -84,6 +97,10 @@ impl Updatable for State {
                         norm: depth * 2.,
                     });
                 brick.damage();
+
+                if rand::thread_rng().gen_bool(1. / 10.) {
+                    self.bonuses.push(Bonus::random(self.ball.position));
+                }
             }
         }
         self.bricks.retain(|brick| {
@@ -99,6 +116,36 @@ impl Updatable for State {
                     norm: depth * 2.,
                 });
         }
+
+        for ref mut bonus in &mut self.bonuses {
+            bonus.update(dt);
+        }
+
+        let pit = self.pit.shape.clone();
+        let player = self.player.shape();
+        let mut to_add = Vec::new();
+        self.bonuses.retain(|b| {
+            if pit.collide(&b.shape()).is_some() { return false }
+
+            if player.collide(&b.shape()).is_some() {
+                to_add.push(ActiveBonus::from(b));
+                return false;
+            }
+
+            true
+        });
+
+        self.active_bonuses.extend(to_add);
+
+        for ref mut bonus in &mut self.active_bonuses {
+            bonus.update(dt);
+        }
+
+        self.active_bonuses.retain(ActiveBonus::active);
+
+        let active_slow = self.active_bonuses.iter().filter(|b| b.bonus_type == BonusType::Slow).count();
+
+        self.ball.velocity.norm = BALL_SPEED / (active_slow + 1) as f64;
 
         for wall in &self.walls {
             if let Some((normal, depth)) = wall.shape.collide(&self.ball.shape()) {

@@ -1,3 +1,4 @@
+extern crate rand;
 extern crate failure;
 extern crate sdl2;
 
@@ -9,6 +10,7 @@ extern crate serde_json;
 
 pub mod ball;
 pub mod brick;
+pub mod bonus;
 // pub mod store; // Not used for now
 pub mod level;
 pub mod player;
