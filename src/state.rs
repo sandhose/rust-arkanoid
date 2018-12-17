@@ -83,6 +83,9 @@ impl State {
                 }
                 self.balls.extend(to_add);
                 self.balls.truncate(MAX_BALLS);
+            },
+            BonusType::Life => {
+                self.lives += 1;
             }
         }
     }

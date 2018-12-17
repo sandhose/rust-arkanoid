@@ -16,14 +16,16 @@ pub enum BonusType {
     Slow,
     Expand,
     Divide,
+    Life,
 }
 
 impl Distribution<BonusType> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> BonusType {
-        match rng.gen_range(0, 3) {
+        match rng.gen_range(0, 4) {
             0 => BonusType::Slow,
             1 => BonusType::Expand,
-            _ => BonusType::Divide,
+            2 => BonusType::Divide,
+            _ => BonusType::Life,
         }
     }
 }
@@ -34,6 +36,7 @@ impl BonusType {
             BonusType::Slow => Color::RGBA(255, 0, 0, 255),
             BonusType::Expand => Color::RGBA(0, 255, 0, 255),
             BonusType::Divide => Color::RGBA(0, 0, 255, 255),
+            BonusType::Life => Color::RGBA(0, 255, 255, 255),
         }
     }
 }
