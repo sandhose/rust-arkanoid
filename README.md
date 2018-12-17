@@ -1,3 +1,4 @@
 # arkanoid
 
-Version alternative du projet Arkanoid du cours de Programmation avancée
+Arkanoid, Rust edition : un casse-brique garanti sans fuite mémoire ou
+dépassement de pile
