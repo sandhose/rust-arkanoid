@@ -1,13 +1,13 @@
 use failure::{err_msg, Error};
-use sdl2::rect::Rect;
 use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 use sdl2::render::{Canvas, RenderTarget, Texture};
 
 use resize::RenderContext;
 use shape::Circle;
+use textures::{BallSprite, TextureMaker};
 use traits::{Collision, Renderable, Updatable};
 use utils::{Pixels, Point, Rad, Vector, PI};
-use textures::{TextureMaker, BallSprite};
 
 pub const BALL_RADIUS: Pixels = 8.0;
 const BALL_SPEED: f64 = 400.;
@@ -83,16 +83,23 @@ impl<T> Renderable<T> for Ball
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext, texture: &Texture) -> Result<(), Error> {
+    fn render(
+        &self,
+        canvas: &mut Canvas<T>,
+        context: &RenderContext,
+        texture: &Texture,
+    ) -> Result<(), Error> {
         let copy_rects = TextureMaker::ball(
             BallSprite::Ball4,
             Rect::from_center(
                 context.translate_point(self.position),
                 context.scale(BALL_RADIUS * 2.),
                 context.scale(BALL_RADIUS * 2.),
-            )
+            ),
         );
-        canvas.copy(texture, copy_rects.src, copy_rects.dst).map_err(err_msg)?;
+        canvas
+            .copy(texture, copy_rects.src, copy_rects.dst)
+            .map_err(err_msg)?;
         Ok(())
     }
 }

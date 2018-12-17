@@ -25,11 +25,10 @@ mod player;
 mod resize;
 mod shape;
 mod state;
+mod textures;
 mod traits;
 mod utils;
 mod wall;
-mod textures;
-
 
 use level::Level;
 use resize::{RenderContext, Size};
@@ -68,7 +67,8 @@ fn main() {
     let mut state = State::new(level);
 
     let creator = canvas.texture_creator();
-    let mut sprites = sdl2::surface::Surface::load_bmp(String::from("resources/default_sprites.bmp")).unwrap();
+    let mut sprites =
+        sdl2::surface::Surface::load_bmp(String::from("resources/default_sprites.bmp")).unwrap();
     sprites.set_color_key(true, Color::RGB(0, 0, 0)).unwrap();
     let texture = creator.create_texture_from_surface(sprites).unwrap();
 
@@ -80,7 +80,7 @@ fn main() {
         if !won && alive {
             canvas.set_draw_color(Color::RGB(0, 0, 0));
             canvas.clear();
-             state.render(&mut canvas, &context, &texture).unwrap();
+            state.render(&mut canvas, &context, &texture).unwrap();
             canvas.present();
 
             let now = Instant::now();

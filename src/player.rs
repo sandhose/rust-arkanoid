@@ -4,8 +4,8 @@ use sdl2::rect::Rect as SDLRect;
 use sdl2::render::{Canvas, RenderTarget, Texture};
 
 use shape::Rect;
-use traits::{Renderable, Updatable, Collision};
 use textures::{TextureMaker, VesselSprite};
+use traits::{Collision, Renderable, Updatable};
 use utils::{Pixels, Point, Vector};
 
 const PLAYER_INITIAL_WIDTH: Pixels = 80.0;
@@ -88,9 +88,11 @@ where
                 context.translate_point(self.position),
                 context.scale(self.width),
                 context.scale(PLAYER_THICKNESS),
-            )
+            ),
         );
-        canvas.copy(texture, copy_rects.src, copy_rects.dst).map_err(err_msg)?;
+        canvas
+            .copy(texture, copy_rects.src, copy_rects.dst)
+            .map_err(err_msg)?;
         Ok(())
     }
 }

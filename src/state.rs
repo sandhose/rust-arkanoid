@@ -1,6 +1,6 @@
 use rand::Rng;
-use std::collections::HashMap;
 use sdl2::render::{Canvas, RenderTarget, Texture};
+use std::collections::HashMap;
 
 use ball::{Ball, BALL_RADIUS};
 use bonus::{ActiveBonus, BonusType, FallingBonus};
@@ -83,7 +83,7 @@ impl State {
                 }
                 self.balls.extend(to_add);
                 self.balls.truncate(MAX_BALLS);
-            },
+            }
             BonusType::Life => {
                 self.lives += 1;
             }
@@ -142,8 +142,9 @@ impl Updatable for State {
             ball.update(dt);
             // Force the position of balls that are on hold
             if ball.on_hold() {
-                ball.set_position(self.player.position()
-                                  + Point::new(0., -(PLAYER_THICKNESS / 2. + BALL_RADIUS)));
+                ball.set_position(
+                    self.player.position() + Point::new(0., -(PLAYER_THICKNESS / 2. + BALL_RADIUS)),
+                );
             }
         }
 
@@ -228,10 +229,7 @@ impl Updatable for State {
         if self.balls.is_empty() {
             // Lost a life
             self.lives -= 1;
-            self.balls.push(Ball::new(
-                Point::new(0., 0.),
-                -PI / 4.0,
-            ));
+            self.balls.push(Ball::new(Point::new(0., 0.), -PI / 4.0));
         }
 
         for wall in &self.walls {

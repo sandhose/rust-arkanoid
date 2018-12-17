@@ -57,7 +57,11 @@ impl Default for Level {
                 };
 
                 bricks.push(Brick::new(
-                    BrickType::Simple,
+                    if i % 2 == 0 {
+                        BrickType::Simple
+                    } else {
+                        BrickType::Hard
+                    },
                     center + offset,
                     BRICK_WIDTH,
                     BRICK_HEIGHT,

@@ -70,7 +70,12 @@ impl<T> Renderable<T> for FallingBonus
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext, _texture: &Texture) -> Result<(), Error> {
+    fn render(
+        &self,
+        canvas: &mut Canvas<T>,
+        context: &RenderContext,
+        _texture: &Texture,
+    ) -> Result<(), Error> {
         canvas.set_draw_color(self.bonus_type.color());
         canvas
             .fill_rect(SDLRect::from_center(
