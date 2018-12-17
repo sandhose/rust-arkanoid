@@ -2,15 +2,15 @@ use rand::Rng;
 use sdl2::render::{Canvas, RenderTarget};
 use std::collections::HashMap;
 
-use ball::Ball;
+use ball::{Ball, BALL_RADIUS};
 use bonus::{ActiveBonus, BonusType, FallingBonus};
 use brick::Brick;
 use level::Level;
-use player::Player;
+use player::{Player, PLAYER_THICKNESS};
 use resize::RenderContext;
 use traits::{Collide, Renderable, Updatable};
 use utils::{Point, PI};
-use wall::Wall;
+use wall::{Wall, WALL_THICKNESS};
 
 const MAX_BALLS: usize = 16;
 
@@ -24,6 +24,9 @@ pub struct State {
     balls: Vec<Ball>,
 }
 
+const PLAYER_OFFSET: f64 = WALL_THICKNESS + PLAYER_THICKNESS / 2. + 10.;
+const BALL_OFFSET: f64 = PLAYER_OFFSET + PLAYER_THICKNESS / 2. + BALL_RADIUS;
+
 impl State {
     pub fn new(level: Level) -> State {
         State {
@@ -34,9 +37,15 @@ impl State {
             active_bonuses: Vec::new(),
             player: Player::new(Point::new(
                 level.width() as f64 * 0.5,
-                level.height() as f64 - 30.0,
+                level.height() as f64 - PLAYER_OFFSET,
             )),
-            balls: vec![Ball::new(Point::new(100.0, 350.0), PI / 4.0)],
+            balls: vec![Ball::new(
+                Point::new(
+                    level.width() as f64 * 0.5,
+                    level.height() as f64 - BALL_OFFSET,
+                ),
+                -PI / 4.0,
+            )],
         }
     }
 
@@ -56,10 +65,10 @@ impl State {
                 let mut to_add = Vec::new();
                 for ball in &self.balls {
                     let mut new = ball.clone();
-                    new.rotate(2. * PI / 3.);
+                    new.rotate(PI / 6.);
                     to_add.push(new);
                     let mut new = ball.clone();
-                    new.rotate(-2. * PI / 3.);
+                    new.rotate(-PI / 6.);
                     to_add.push(new);
                 }
                 self.balls.extend(to_add);
@@ -126,7 +135,7 @@ impl Updatable for State {
                     ball.bounce(collision);
                     brick.damage();
 
-                    if !brick.alive() && rand::thread_rng().gen_bool(1. / 1.) {
+                    if !brick.alive() && rand::thread_rng().gen_bool(1. / 4.) {
                         self.bonuses.push(FallingBonus::random(brick.center));
                     }
                 }
@@ -187,6 +196,8 @@ impl Updatable for State {
         for (&bonus, &count) in active.iter() {
             self.bonus_stack(bonus, count);
         }
+
+        self.balls.retain(|b| pit.collide(&b.shape()).is_none());
 
         for wall in &self.walls {
             // Check for collisions between walls and the balls

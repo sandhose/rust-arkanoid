@@ -67,6 +67,11 @@ fn main() {
 
     let mut last_update = Instant::now();
     'running: loop {
+        canvas.set_draw_color(Color::RGB(0, 0, 0));
+        canvas.clear();
+        state.render(&mut canvas, &context).unwrap();
+        canvas.present();
+
         let now = Instant::now();
         let dt = now.duration_since(last_update);
         let dt: f64 = dt.as_secs() as f64 + dt.subsec_nanos() as f64 * 1e-9;
@@ -109,10 +114,5 @@ fn main() {
                 _ => {}
             }
         }
-
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
-        canvas.clear();
-        state.render(&mut canvas, &context).unwrap();
-        canvas.present();
     }
 }

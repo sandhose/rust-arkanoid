@@ -68,7 +68,7 @@ impl Default for Level {
         Level {
             bricks,
             width: (BRICK_WIDTH + BRICK_V_PAD) * N as f64 + WALL_THICKNESS * 2. + BRICK_V_PAD,
-            height: ((BRICK_HEIGHT + BRICK_H_PAD) * M as f64 + WALL_THICKNESS) * 2.,
+            height: ((BRICK_HEIGHT + BRICK_H_PAD) * M as f64 + WALL_THICKNESS) * 3.,
         }
     }
 }

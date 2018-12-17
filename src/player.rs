@@ -10,7 +10,7 @@ use utils::{Pixels, Point, Vector};
 const PLAYER_INITIAL_WIDTH: Pixels = 80.0;
 const PLAYER_GROWTH: Pixels = 20.0;
 const PLAYER_MAX_WIDTH: Pixels = 160.0;
-const PLAYER_THICKNESS: Pixels = 16.0;
+pub const PLAYER_THICKNESS: Pixels = 16.0;
 const PLAYER_FRICTION: f64 = 10.;
 const PLAYER_ACCELERATION: f64 = 5000.;
 

@@ -8,7 +8,7 @@ use shape::Circle;
 use traits::{Collision, Renderable, Updatable};
 use utils::{Pixels, Point, Rad, Vector, PI};
 
-const BALL_RADIUS: Pixels = 8.0;
+pub const BALL_RADIUS: Pixels = 8.0;
 const BALL_SPEED: f64 = 400.;
 
 #[derive(Clone)]
@@ -45,7 +45,7 @@ impl Ball {
     }
 
     pub fn rotate(&mut self, angle: Rad) {
-        self.velocity.angle = self.velocity.angle + angle % 2. * PI;
+        self.velocity.angle = (self.velocity.angle + angle) % 2. * PI;
     }
 
     pub fn bounce(&mut self, (normal, depth): Collision) {

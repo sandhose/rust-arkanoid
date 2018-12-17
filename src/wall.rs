@@ -61,12 +61,7 @@ impl Wall {
     }
 
     pub fn make_walls(h: Pixels, w: Pixels) -> Vec<Self> {
-        return vec![
-            Wall::top(w),
-            Wall::left(h),
-            Wall::right(h, w),
-            Wall::pit(h, w),
-        ];
+        return vec![Wall::top(w), Wall::left(h), Wall::right(h, w)];
     }
 }
 

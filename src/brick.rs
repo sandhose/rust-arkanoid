@@ -17,7 +17,6 @@ pub enum BrickType {
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Brick {
-    #[serde(rename = "type")]
     pub center: Point,
     width: Pixels,
     height: Pixels,
