@@ -64,6 +64,12 @@ impl Brick {
     pub fn shape(&self) -> shape::Rect {
         shape::Rect::from(self)
     }
+
+    pub fn damage(&mut self) {
+        if self.breakable {
+            self.hitpoints -= 1;
+        }
+    }
 }
 
 impl<T> Renderable<T> for Brick

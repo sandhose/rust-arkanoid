@@ -75,8 +75,7 @@ impl Updatable for State {
         self.ball.update(dt);
         self.player.update(dt);
 
-        let mut remove: i64 = -1;
-        for (i, brick) in self.bricks.iter().enumerate() {
+        for brick in &mut self.bricks {
             if let Some((normal, depth)) = brick.shape().collide(&self.ball.shape()) {
                 self.ball.velocity = self.ball.velocity | normal;
                 self.ball.position = self.ball.position
@@ -84,12 +83,13 @@ impl Updatable for State {
                         angle: normal,
                         norm: depth * 2.,
                     });
-                remove = i as i64;
+                brick.damage();
             }
         }
-        if remove >= 0 && remove < (self.bricks.len() as i64) {
-            self.bricks.remove(remove as usize);
-        }
+        self.bricks.retain(|brick| {
+            let delete = brick.breakable && brick.hitpoints == 0;
+            !delete
+        });
 
         if let Some((normal, depth)) = self.player.shape().collide(&self.ball.shape()) {
             self.ball.velocity = self.ball.velocity | normal;
