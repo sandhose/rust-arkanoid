@@ -7,7 +7,7 @@ use shape::{InfiniteWall, WallOrientation};
 use traits::Renderable;
 use utils::{Pixels, Point};
 
-pub const WALL_THICKNESS: Pixels = 10.0;
+pub const WALL_THICKNESS: Pixels = 4.0;
 
 // DONE: refactored this
 pub struct Wall {

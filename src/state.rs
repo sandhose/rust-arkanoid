@@ -21,11 +21,11 @@ impl State {
     pub fn new(level: Level) -> State {
         State {
             bricks: level.bricks.clone(),
-            walls: Wall::make_walls(level.height(), level.width()),
+            walls: Wall::make_walls(level.height() as f64, level.width() as f64),
             player: Player {
                 position: Point {
-                    x: level.width() * 0.5,
-                    y: level.height() - 30.0,
+                    x: level.width() as f64 * 0.5,
+                    y: level.height() as f64 - 30.0,
                 },
                 velocity: 0.,
                 acceleration: 0.,

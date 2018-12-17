@@ -1,5 +1,5 @@
 use ball::{Ball, BALL_RADIUS};
-use brick::{Brick, BRICK_HEIGHT, BRICK_WIDTH};
+use brick::Brick;
 use player::{Player, PLAYER_THICKNESS, PLAYER_WIDTH};
 use traits::{Collide, Collision};
 use utils::{Pixels, Point, Rad, Vector, PI};
@@ -20,8 +20,8 @@ impl From<&Brick> for Rect {
     fn from(brick: &Brick) -> Self {
         Rect {
             center: brick.center,
-            height: BRICK_HEIGHT,
-            width: BRICK_WIDTH,
+            height: brick.height,
+            width: brick.width,
         }
     }
 }

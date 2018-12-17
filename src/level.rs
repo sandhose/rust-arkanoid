@@ -9,15 +9,17 @@ use wall::WALL_THICKNESS;
 #[derive(Deserialize, Serialize)]
 pub struct Level {
     pub bricks: Vec<Brick>,
+    height: Pixels,
+    width: Pixels,
 }
 
 impl Level {
-    pub fn height(&self) -> Pixels {
-        600.0
+    pub fn height(&self) -> u32 {
+        self.height as u32
     }
 
-    pub fn width(&self) -> Pixels {
-        800.0
+    pub fn width(&self) -> u32 {
+        self.width as u32
     }
 
     fn load(body: &str) -> Result<Self, Error> {
@@ -34,23 +36,39 @@ impl Level {
 
 impl Default for Level {
     fn default() -> Self {
+        const BRICK_WIDTH: Pixels = 32.0;
+        const BRICK_HEIGHT: Pixels = 16.0;
+        const BRICK_V_PAD: Pixels = 2.0;
+        const BRICK_H_PAD: Pixels = 2.0;
+        const N: usize = 25;
+        const M: usize = 13;
+
         let mut bricks = vec![];
         let offset = Point {
             x: BRICK_WIDTH / 2. + BRICK_V_PAD + WALL_THICKNESS,
             y: BRICK_HEIGHT / 2. + BRICK_H_PAD + WALL_THICKNESS,
         };
 
-        for i in 0..10 {
-            for j in 0..6 {
+        for i in 0..N {
+            for j in 0..M {
                 let center = Point {
                     x: i as Pixels * (BRICK_WIDTH + BRICK_V_PAD),
                     y: j as Pixels * (BRICK_HEIGHT + BRICK_H_PAD),
                 };
 
-                bricks.push(Brick::new(BrickType::Simple, center + offset));
+                bricks.push(Brick::new(
+                    BrickType::Simple,
+                    center + offset,
+                    BRICK_WIDTH,
+                    BRICK_HEIGHT,
+                ));
             }
         }
 
-        Level { bricks }
+        Level {
+            bricks,
+            width: (BRICK_WIDTH + BRICK_V_PAD) * N as f64 + WALL_THICKNESS * 2. + BRICK_V_PAD,
+            height: ((BRICK_HEIGHT + BRICK_H_PAD) * M as f64 + WALL_THICKNESS) * 2.,
+        }
     }
 }

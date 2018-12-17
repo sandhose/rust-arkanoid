@@ -23,9 +23,7 @@ use level::Level;
 use resize::{RenderContext, Size};
 use state::State;
 use traits::*;
-use utils::Pixels;
 
-use std::time::Instant;
 use failure::{err_msg, Error};
 use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::{KeyboardState, Keycode, Scancode};
@@ -33,13 +31,14 @@ use sdl2::pixels::Color;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 use sdl2::{EventPump, Sdl};
+use std::time::Instant;
 
-fn init(width: Pixels, height: Pixels) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
+fn init(width: u32, height: u32) -> Result<(Sdl, Canvas<Window>, EventPump), Error> {
     let sdl_context = sdl2::init().map_err(err_msg)?;
     let video_subsystem = sdl_context.video().map_err(err_msg)?;
 
     let window = video_subsystem
-        .window("Arkanoid", height as u32, width as u32)
+        .window("Arkanoid", height, width)
         .position_centered()
         .resizable()
         .allow_highdpi()
@@ -55,13 +54,15 @@ fn init(width: Pixels, height: Pixels) -> Result<(Sdl, Canvas<Window>, EventPump
 }
 
 fn main() {
+    // println!("{}", serde_json::to_string(&Level::default()).unwrap());
+
     let level = Level::load_file("levels/default.json").expect("Could not load level file");
     let (_sdl_context, mut canvas, mut event_pump) = init(level.height(), level.width()).unwrap();
-    let mut state = State::new(level);
     let mut context = RenderContext::new(
-        Size::new((800, 600)),
+        Size::new((level.width(), level.height())),
         Size::new(canvas.window().drawable_size()),
     );
+    let mut state = State::new(level);
 
     let mut last_update = Instant::now();
     'running: loop {

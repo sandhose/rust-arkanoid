@@ -7,11 +7,6 @@ use resize::RenderContext;
 use shape;
 use utils::{Pixels, Point};
 
-pub const BRICK_WIDTH: Pixels = 80.0;
-pub const BRICK_HEIGHT: Pixels = 40.0;
-pub const BRICK_V_PAD: Pixels = 5.0;
-pub const BRICK_H_PAD: Pixels = 5.0;
-
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum BrickType {
@@ -23,30 +18,34 @@ pub enum BrickType {
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Brick {
     #[serde(rename = "type")]
-    brick_type: BrickType,
     pub center: Point,
+    pub width: Pixels,
+    pub height: Pixels,
     pub breakable: bool,
     pub hitpoints: u8,
 }
 
 impl Brick {
-    pub fn new(brick_type: BrickType, center: Point) -> Brick {
+    pub fn new(brick_type: BrickType, center: Point, width: Pixels, height: Pixels) -> Brick {
         match brick_type {
             BrickType::Simple => Brick {
-                brick_type,
                 center,
+                width,
+                height,
                 breakable: true,
                 hitpoints: 1,
             },
             BrickType::Hard => Brick {
-                brick_type,
                 center,
+                width,
+                height,
                 breakable: true,
                 hitpoints: 2,
             },
             BrickType::Super => Brick {
-                brick_type,
                 center,
+                width,
+                height,
                 breakable: false,
                 hitpoints: 0,
             },
@@ -54,10 +53,10 @@ impl Brick {
     }
 
     fn color(&self) -> sdl2::pixels::Color {
-        match &self.brick_type {
-            BrickType::Simple => sdl2::pixels::Color::RGBA(200, 0, 200, 200),
-            BrickType::Hard => sdl2::pixels::Color::RGBA(0, 200, 200, 200),
-            BrickType::Super => sdl2::pixels::Color::RGBA(200, 200, 0, 200),
+        match &self.hitpoints {
+            1 => sdl2::pixels::Color::RGBA(200, 0, 200, 200),
+            2 => sdl2::pixels::Color::RGBA(0, 200, 200, 200),
+            _ => sdl2::pixels::Color::RGBA(200, 200, 0, 200),
         }
     }
 
@@ -85,8 +84,8 @@ where
         canvas
             .fill_rect(Rect::from_center(
                 context.translate_point(self.center),
-                context.scale(BRICK_WIDTH) as u32,
-                context.scale(BRICK_HEIGHT) as u32,
+                context.scale(self.width),
+                context.scale(self.height),
             ))
             .map_err(err_msg)?;
         Ok(())
