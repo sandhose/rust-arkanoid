@@ -1,27 +1,47 @@
+use failure::{err_msg, Error};
 use sdl2::pixels::Color;
 use sdl2::rect::Rect as SDLRect;
 use sdl2::render::{Canvas, RenderTarget};
-use failure::{err_msg, Error};
 
-use shape::Circle;
 use resize::RenderContext;
-use utils::Point;
+use shape::Circle;
+use state::{State, BALL_SPEED};
 use traits::{Renderable, Updatable};
+use utils::Point;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BonusType {
-    Slow
+    Slow,
+}
+
+impl BonusType {
+    pub fn activate(self, state: &mut State) {
+        match self {
+            BonusType::Slow => state.queue_bonus(ActiveBonus::from(self)),
+        }
+    }
+
+    pub fn stack(self, state: &mut State, count: usize) {
+        match self {
+            BonusType::Slow => {
+                state.ball.velocity.norm = BALL_SPEED / (count + 1) as f64;
+            }
+        }
+    }
 }
 
 #[derive(Debug)]
-pub struct Bonus {
+pub struct FallingBonus {
     pub bonus_type: BonusType,
-    pub position: Point
+    pub position: Point,
 }
 
-impl Bonus {
+impl FallingBonus {
     pub fn random(position: Point) -> Self {
-        Bonus { bonus_type: BonusType::Slow, position }
+        FallingBonus {
+            bonus_type: BonusType::Slow,
+            position,
+        }
     }
 
     pub fn shape(&self) -> Circle {
@@ -29,8 +49,7 @@ impl Bonus {
     }
 }
 
-
-impl<T> Renderable<T> for Bonus
+impl<T> Renderable<T> for FallingBonus
 where
     T: RenderTarget,
 {
@@ -47,7 +66,7 @@ where
     }
 }
 
-impl Updatable for Bonus {
+impl Updatable for FallingBonus {
     fn update(&mut self, dt: f64) {
         self.position.y += dt * 200.;
     }
@@ -56,7 +75,7 @@ impl Updatable for Bonus {
 #[derive(Debug)]
 pub struct ActiveBonus {
     pub bonus_type: BonusType,
-    timer: f64
+    timer: f64,
 }
 
 impl ActiveBonus {
@@ -64,10 +83,18 @@ impl ActiveBonus {
         self.timer > 0.
     }
 }
+impl From<&FallingBonus> for ActiveBonus {
+    fn from(bonus: &FallingBonus) -> ActiveBonus {
+        ActiveBonus::from(bonus.bonus_type)
+    }
+}
 
-impl From<&Bonus> for ActiveBonus {
-    fn from(bonus: &Bonus) -> ActiveBonus {
-        ActiveBonus { bonus_type: bonus.bonus_type, timer: 10. }
+impl From<BonusType> for ActiveBonus {
+    fn from(bonus_type: BonusType) -> ActiveBonus {
+        ActiveBonus {
+            bonus_type,
+            timer: 10.,
+        }
     }
 }
 

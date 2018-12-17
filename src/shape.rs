@@ -1,6 +1,6 @@
 use ball::{Ball, BALL_RADIUS};
+use bonus::FallingBonus;
 use brick::Brick;
-use bonus::Bonus;
 use player::{Player, PLAYER_THICKNESS, PLAYER_WIDTH};
 use traits::{Collide, Collision};
 use utils::{Pixels, Point, Rad, Vector, PI};
@@ -52,8 +52,8 @@ impl From<&Ball> for Circle {
     }
 }
 
-impl From<&Bonus> for Circle {
-    fn from(bonus: &Bonus) -> Self {
+impl From<&FallingBonus> for Circle {
+    fn from(bonus: &FallingBonus) -> Self {
         Circle {
             center: bonus.position,
             radius: 12.,

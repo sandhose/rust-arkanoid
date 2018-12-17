@@ -1,5 +1,5 @@
-extern crate rand;
 extern crate failure;
+extern crate rand;
 extern crate sdl2;
 
 #[macro_use]
@@ -9,8 +9,8 @@ extern crate serde;
 extern crate serde_json;
 
 pub mod ball;
-pub mod brick;
 pub mod bonus;
+pub mod brick;
 // pub mod store; // Not used for now
 pub mod level;
 pub mod player;

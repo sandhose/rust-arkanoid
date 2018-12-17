@@ -1,10 +1,11 @@
 use rand::Rng;
 use sdl2::pixels::Color;
 use sdl2::render::{Canvas, RenderTarget};
+use std::collections::HashMap;
 
 use ball::Ball;
+use bonus::{ActiveBonus, FallingBonus};
 use brick::Brick;
-use bonus::{Bonus, ActiveBonus, BonusType};
 use level::Level;
 use player::Player;
 use resize::RenderContext;
@@ -16,13 +17,13 @@ pub struct State {
     bricks: Vec<Brick>,
     walls: Vec<Wall>,
     pit: Wall,
-    bonuses: Vec<Bonus>,
+    bonuses: Vec<FallingBonus>,
     active_bonuses: Vec<ActiveBonus>,
     pub player: Player,
     pub ball: Ball,
 }
 
-const BALL_SPEED: f64 = 500.;
+pub const BALL_SPEED: f64 = 500.;
 
 impl State {
     pub fn new(level: Level) -> State {
@@ -50,6 +51,10 @@ impl State {
                 color: Color::RGBA(120, 120, 200, 230),
             },
         }
+    }
+
+    pub fn queue_bonus(&mut self, b: ActiveBonus) {
+        self.active_bonuses.push(b);
     }
 }
 
@@ -94,75 +99,92 @@ impl Updatable for State {
                 self.ball.position = self.ball.position
                     + Point::from(Vector {
                         angle: normal,
-                        norm: depth * 2.,
+                        norm: depth,
                     });
                 brick.damage();
 
                 if rand::thread_rng().gen_bool(1. / 10.) {
-                    self.bonuses.push(Bonus::random(self.ball.position));
+                    self.bonuses.push(FallingBonus::random(self.ball.position));
                 }
             }
         }
-        self.bricks.retain(|brick| {
-            let delete = brick.breakable && brick.hitpoints == 0;
-            !delete
-        });
+        self.bricks
+            .retain(|brick| !brick.breakable || brick.hitpoints > 0);
 
         if let Some((normal, depth)) = self.player.shape().collide(&self.ball.shape()) {
             self.ball.velocity = self.ball.velocity | normal;
             self.ball.position = self.ball.position
                 + Point::from(Vector {
                     angle: normal,
-                    norm: depth * 2.,
+                    norm: depth,
                 });
         }
 
+        // Make the bonuses fall
         for ref mut bonus in &mut self.bonuses {
             bonus.update(dt);
         }
 
+        // Check for collisions on bonuses
         let pit = self.pit.shape.clone();
         let player = self.player.shape();
-        let mut to_add = Vec::new();
+        let mut to_activate = Vec::new();
         self.bonuses.retain(|b| {
-            if pit.collide(&b.shape()).is_some() { return false }
-
-            if player.collide(&b.shape()).is_some() {
-                to_add.push(ActiveBonus::from(b));
-                return false;
+            // …with the pit (just destroy them)
+            if pit.collide(&b.shape()).is_some() {
+                false
+            } else if player.collide(&b.shape()).is_some() {
+                // …with the player (activate them)
+                to_activate.push(b.bonus_type);
+                false
+            } else {
+                true
             }
-
-            true
         });
 
-        self.active_bonuses.extend(to_add);
+        for b in to_activate {
+            b.activate(self);
+        }
 
+        // Update the timer on the active bonuses
         for ref mut bonus in &mut self.active_bonuses {
             bonus.update(dt);
         }
 
-        self.active_bonuses.retain(ActiveBonus::active);
+        // Build a hashmap to count the number of active bonus for each type
+        let active = {
+            let mut m = HashMap::new();
+            for bonus in &self.active_bonuses {
+                let e = m.entry(bonus.bonus_type).or_insert(0);
+                if bonus.active() {
+                    *e += 1;
+                }
+            }
+            m
+        };
 
-        let active_slow = self.active_bonuses.iter().filter(|b| b.bonus_type == BonusType::Slow).count();
-
-        self.ball.velocity.norm = BALL_SPEED / (active_slow + 1) as f64;
+        for (bonus_type, &count) in active.iter() {
+            bonus_type.stack(self, count);
+        }
 
         for wall in &self.walls {
+            // Check for collisions between walls and the ball
             if let Some((normal, depth)) = wall.shape.collide(&self.ball.shape()) {
                 self.ball.velocity = self.ball.velocity | normal;
                 self.ball.position = self.ball.position
                     + Point::from(Vector {
                         angle: normal,
-                        norm: depth * 2.,
+                        norm: depth,
                     });
             }
 
+            // …and between the walls and the player
             if let Some((normal, depth)) = wall.shape.collide(&self.player.shape()) {
                 self.player.velocity = -self.player.velocity;
                 self.player.position.x = self.player.position.x
                     + Vector {
                         angle: normal,
-                        norm: depth * 2.,
+                        norm: depth,
                     }
                     .x();
             }
