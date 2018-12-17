@@ -136,21 +136,27 @@ where
 
 impl Updatable for State {
     fn update(&mut self, dt: f64) {
+        // First, update all the balls
         for ref mut ball in &mut self.balls {
             ball.update(dt);
+            // Force the position of balls that are on hold
             if ball.on_hold() {
-                ball.set_position(self.player.position() + Point::new(0., -(PLAYER_THICKNESS / 2. + BALL_RADIUS)));
+                ball.set_position(self.player.position()
+                                  + Point::new(0., -(PLAYER_THICKNESS / 2. + BALL_RADIUS)));
             }
         }
 
+        // Update the player
         self.player.update(dt);
 
+        // Check for collisions between bricks and balls
         for brick in &mut self.bricks {
             for ref mut ball in &mut self.balls {
                 if let Some(collision) = brick.shape().collide(&ball.shape()) {
                     ball.bounce(collision);
                     brick.damage();
 
+                    // Randomly spawn a new bonus
                     if !brick.alive() && rand::thread_rng().gen_bool(1. / 4.) {
                         self.bonuses.push(FallingBonus::random(brick.center));
                     }
@@ -158,8 +164,10 @@ impl Updatable for State {
             }
         }
 
+        // Remove bricks that were destroyed
         self.bricks.retain(Brick::alive);
 
+        // Check for collisions between balls and the player
         for ref mut ball in &mut self.balls {
             if let Some(collision) = self.player.shape().collide(&ball.shape()) {
                 ball.bounce(collision);
@@ -174,7 +182,7 @@ impl Updatable for State {
         // Check for collisions on bonuses
         let pit = self.pit.shape.clone();
         let player = self.player.shape();
-        let mut to_activate = Vec::new();
+        let mut to_activate: Vec<BonusType> = Vec::new(); // List of bonuses to activate
         self.bonuses.retain(|b| {
             // …with the pit (just destroy them)
             if pit.collide(&b.shape()).is_some() {
@@ -198,7 +206,7 @@ impl Updatable for State {
         }
 
         // Build a hashmap to count the number of active bonus for each type
-        let active = {
+        let active: HashMap<BonusType, usize> = {
             let mut m = HashMap::new();
             for bonus in &self.active_bonuses {
                 let e = m.entry(bonus.bonus_type).or_insert(0);
@@ -213,6 +221,7 @@ impl Updatable for State {
             self.bonus_stack(bonus, count);
         }
 
+        // Remove balls that collided with the pit
         self.balls.retain(|b| pit.collide(&b.shape()).is_none());
 
         if self.balls.is_empty() {
