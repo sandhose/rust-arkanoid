@@ -23,10 +23,7 @@ impl Wall {
             height: WALL_THICKNESS,
             shape: InfiniteWall {
                 orientation: WallOrientation::Top,
-                center: Point::new(
-                    width / 2.,
-                    WALL_THICKNESS / 2.,
-                ),
+                center: Point::new(width / 2., WALL_THICKNESS / 2.),
             },
         }
     }
@@ -37,10 +34,7 @@ impl Wall {
             height: height,
             shape: InfiniteWall {
                 orientation: WallOrientation::Left,
-                center: Point::new(
-                    WALL_THICKNESS / 2.,
-                    height / 2.,
-                ),
+                center: Point::new(WALL_THICKNESS / 2., height / 2.),
             },
         }
     }
@@ -51,10 +45,7 @@ impl Wall {
             height: height,
             shape: InfiniteWall {
                 orientation: WallOrientation::Right,
-                center: Point::new(
-                    width - (WALL_THICKNESS / 2.),
-                    height / 2.,
-                ),
+                center: Point::new(width - (WALL_THICKNESS / 2.), height / 2.),
             },
         };
     }
@@ -65,10 +56,7 @@ impl Wall {
             height: WALL_THICKNESS,
             shape: InfiniteWall {
                 orientation: WallOrientation::Bottom,
-                center: Point::new(
-                    width / 2.,
-                    height - (WALL_THICKNESS / 2.),
-                ),
+                center: Point::new(width / 2., height - (WALL_THICKNESS / 2.)),
             },
         }
     }
@@ -87,7 +75,11 @@ impl<T> Renderable<T> for Wall
 where
     T: RenderTarget,
 {
-    fn render(&self, canvas: &mut Canvas<T>, context: &RenderContext) -> Result<(), failure::Error> {
+    fn render(
+        &self,
+        canvas: &mut Canvas<T>,
+        context: &RenderContext,
+    ) -> Result<(), failure::Error> {
         canvas.set_draw_color(sdl2::pixels::Color::RGBA(127, 127, 127, 255));
         canvas
             .fill_rect(Rect::from_center(
