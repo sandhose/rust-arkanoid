@@ -21,6 +21,7 @@ pub struct State {
     bonuses: Vec<FallingBonus>,
     active_bonuses: Vec<ActiveBonus>,
     player: Player,
+    lives: u8,
     balls: Vec<Ball>,
 }
 
@@ -39,6 +40,7 @@ impl State {
                 level.width() as f64 * 0.5,
                 level.height() as f64 - PLAYER_OFFSET,
             )),
+            lives: 3,
             balls: vec![Ball::new(
                 Point::new(
                     level.width() as f64 * 0.5,
@@ -47,6 +49,14 @@ impl State {
                 -PI / 4.0,
             )],
         }
+    }
+
+    pub fn alive(&self) -> bool {
+        self.lives > 0
+    }
+
+    pub fn won(&self) -> bool {
+        !self.bricks.iter().any(|b| b.breakable)
     }
 
     pub fn input(&mut self, input: f64) {
@@ -125,6 +135,9 @@ impl Updatable for State {
     fn update(&mut self, dt: f64) {
         for ref mut ball in &mut self.balls {
             ball.update(dt);
+            if ball.on_hold() {
+                ball.set_position(self.player.position() + Point::new(0., -(PLAYER_THICKNESS / 2. + BALL_RADIUS)));
+            }
         }
 
         self.player.update(dt);
@@ -198,6 +211,15 @@ impl Updatable for State {
         }
 
         self.balls.retain(|b| pit.collide(&b.shape()).is_none());
+
+        if self.balls.is_empty() {
+            // Lost a life
+            self.lives -= 1;
+            self.balls.push(Ball::new(
+                Point::new(0., 0.),
+                -PI / 4.0,
+            ));
+        }
 
         for wall in &self.walls {
             // Check for collisions between walls and the balls

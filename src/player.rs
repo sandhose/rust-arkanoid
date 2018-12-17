@@ -55,6 +55,10 @@ impl Player {
             .x();
     }
 
+    pub fn position(&self) -> Point {
+        self.position
+    }
+
     pub fn shape(&self) -> Rect {
         self.into()
     }

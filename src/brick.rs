@@ -20,7 +20,7 @@ pub struct Brick {
     pub center: Point,
     width: Pixels,
     height: Pixels,
-    breakable: bool,
+    pub breakable: bool,
     hitpoints: u8,
 }
 

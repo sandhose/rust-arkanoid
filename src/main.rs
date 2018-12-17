@@ -67,30 +67,43 @@ fn main() {
 
     let mut last_update = Instant::now();
     'running: loop {
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
-        canvas.clear();
-        state.render(&mut canvas, &context).unwrap();
-        canvas.present();
+        let alive = state.alive();
+        let won = state.won();
 
-        let now = Instant::now();
-        let dt = now.duration_since(last_update);
-        let dt: f64 = dt.as_secs() as f64 + dt.subsec_nanos() as f64 * 1e-9;
-        last_update = now;
+        if !won && alive {
+            canvas.set_draw_color(Color::RGB(0, 0, 0));
+            canvas.clear();
+            state.render(&mut canvas, &context).unwrap();
+            canvas.present();
 
-        let player_input = {
-            let keyboard_state = KeyboardState::new(&event_pump);
-            let mut input = 0;
-            if keyboard_state.is_scancode_pressed(Scancode::Left) {
-                input -= 1;
-            }
-            if keyboard_state.is_scancode_pressed(Scancode::Right) {
-                input += 1;
-            }
-            input as f64
-        };
+            let now = Instant::now();
+            let dt = now.duration_since(last_update);
+            let dt: f64 = dt.as_secs() as f64 + dt.subsec_nanos() as f64 * 1e-9;
+            last_update = now;
 
-        state.input(player_input);
-        state.update(dt);
+            let player_input = {
+                let keyboard_state = KeyboardState::new(&event_pump);
+                let mut input = 0;
+                if keyboard_state.is_scancode_pressed(Scancode::Left) {
+                    input -= 1;
+                }
+                if keyboard_state.is_scancode_pressed(Scancode::Right) {
+                    input += 1;
+                }
+                input as f64
+            };
+
+            state.input(player_input);
+            state.update(dt);
+        } else if won {
+            canvas.set_draw_color(Color::RGB(0, 200, 0));
+            canvas.clear();
+            canvas.present();
+        } else {
+            canvas.set_draw_color(Color::RGB(200, 0, 0));
+            canvas.clear();
+            canvas.present();
+        }
 
         for event in event_pump.poll_iter() {
             match event {

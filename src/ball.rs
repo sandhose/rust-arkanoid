@@ -16,6 +16,7 @@ pub struct Ball {
     position: Point,
     pub velocity: Vector,
     color: sdl2::pixels::Color,
+    hold_timer: f64,
 }
 
 impl Into<Circle> for &Ball {
@@ -32,6 +33,7 @@ impl Ball {
                 angle,
                 norm: BALL_SPEED,
             },
+            hold_timer: 3.,
             color: Color::RGBA(120, 120, 200, 230),
         }
     }
@@ -56,11 +58,23 @@ impl Ball {
                 norm: depth,
             });
     }
+
+    pub fn set_position(&mut self, p: Point) {
+        self.position = p;
+    }
+
+    pub fn on_hold(&self) -> bool {
+        self.hold_timer > 0.
+    }
 }
 
 impl Updatable for Ball {
     fn update(&mut self, dt: f64) {
-        self.position = self.position + Point::from(self.velocity * dt);
+        if self.on_hold() {
+            self.hold_timer -= dt;
+        } else {
+            self.position = self.position + Point::from(self.velocity * dt);
+        }
     }
 }
 
